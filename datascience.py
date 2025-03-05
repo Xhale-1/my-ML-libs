@@ -29,7 +29,7 @@ class NoiseAnalysis:
       residuals_detached = residuals.detach() if torch.is_tensor(residuals) else residuals
       
       # Residuals vs Predicted values scatter plot
-      plt.figure(figsize=(10, 5))
+      plt.figure(figsize=(5, 3))
       plt.scatter(preds_ts.flatten(), residuals_detached)
       plt.xlabel('Predicted values')
       plt.ylabel('Residuals')
@@ -38,7 +38,7 @@ class NoiseAnalysis:
       plt.show()
       
       # Histogram of residuals
-      plt.figure(figsize=(10, 5))
+      plt.figure(figsize=(5, 3))
       plt.hist(residuals_detached, bins=50)
       plt.xlabel('Residuals')
       plt.ylabel('Frequency')
