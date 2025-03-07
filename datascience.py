@@ -59,7 +59,7 @@ class RawDataAnalysis:
         DATA1 = torch.tensor(DATA1, dtype=torch.float32)
       if not isinstance(y, torch.Tensor):
         y = torch.tensor(y, dtype=torch.float32)
-    
+
     
       # Создание корзин
       num_bins = num_bins # Увеличим число корзин
@@ -73,8 +73,6 @@ class RawDataAnalysis:
       # fig1 = plt.figure()
       # plt.scatter(x[:,0],x[:,1], c = linear_inds)
       # fig1.show()
-    
-    
     
       # Обработка корзин
       irr_err = torch.zeros_like(linear_inds, dtype=torch.float32)
@@ -105,11 +103,7 @@ class RawDataAnalysis:
             id_bin_list.append(torch.tensor([i]))
             bin_pairs_list.append(torch.tensor([len(idx_i)]))
     
-    
-    
-    
       # Результаты
-    
       irr_tens = torch.stack(irr_list)
       #true_irr_tens = torch.stack(true_irr_list)
       id_bin_tens = torch.stack(id_bin_list)
