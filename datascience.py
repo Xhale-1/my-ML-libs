@@ -2,6 +2,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from sklearn.covariance import MinCovDet
+from scipy.spatial import distance
+from scipy.stats import chi2
+
 
 
 class RawDataAnalysis:
