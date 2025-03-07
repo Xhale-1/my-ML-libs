@@ -7,7 +7,7 @@ from scipy.spatial import distance
 from scipy.stats import chi2
 
 class WorkWithData:
-  def mahalanobis(X, torch_out = 0):
+  def outs_with_mahalanobis(X, torch_out = 0):
   
     if not isinstance(X, np.ndarray):
       X = np.array(X)
