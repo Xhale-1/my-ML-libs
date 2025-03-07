@@ -46,7 +46,10 @@ class WorkWithData:
 
 
 
-  
+
+
+
+
 
 class RawDataAnalysis:
 
@@ -127,6 +130,12 @@ class RawDataAnalysis:
       result = torch.cat((id_bin_tens[ids], bin_pairs_tens[ids], irr_tens[ids]), dim=1)
       print(result)
       print(f' irr error: {(torch.abs(result[:,2]).mean())}')
+
+
+
+
+
+
 
 
 class ModelDataAnalysis:
