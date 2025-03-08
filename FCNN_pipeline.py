@@ -120,7 +120,6 @@ def err_plot(losses):
 
 
 def save_to_drive(name, path):
-  %cd '/content'
   torch.save(model.state_dict(), f"/content/{name}.pth")
   shutil.copy(f"/content/{name}.pth", path)
 
