@@ -51,13 +51,6 @@ def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
   return x,y,scaler1,scaler2
 
 
-def outs_with_iso(x00, y00):
-      iso = IsolationForest( contamination = 0.03, random_state=42)
-      outliers = iso.fit_predict(x00)
-    
-      mask = outliers == 1
-      #print(len(x00[mask]))
-      return x00[mask], y00[mask] 
 
 
 def loaders(x,y,tr,vl,ts):
