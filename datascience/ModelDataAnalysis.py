@@ -23,6 +23,8 @@ def analyze_residuals(y_ts, preds_ts):
         y_ts = np.array(y_ts)
 
       if not isinstance(preds_ts, np.ndarray):
+        if isinstance(preds_ts, torch.Tensor):
+          preds_ts = preds_ts.detach()
         preds_ts = np.array(preds_ts)
 
       # Calculate residuals
@@ -57,3 +59,6 @@ def analyze_residuals(y_ts, preds_ts):
 
       # Example usage:
       # analyze_residuals(y[ts], preds_ts)
+
+
+      
