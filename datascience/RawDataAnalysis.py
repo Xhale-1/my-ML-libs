@@ -1,3 +1,5 @@
+import torch
+import matplotlib.pyplot as plt
 
 
 def irreducible_error(DATA1, y, num_bins=5, epsilon=0.4):
