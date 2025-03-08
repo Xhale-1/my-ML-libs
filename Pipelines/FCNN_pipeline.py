@@ -27,9 +27,9 @@ def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
   if not isinstance(y00, np.ndarray):
     y00 = np.array(y00)
   if not isinstance(scale_data_x, np.ndarray):
-    x00 = np.array(scale_data_x)
+    scale_data_x = np.array(scale_data_x)
   if not isinstance(scale_data_y, np.ndarray):
-    y00 = np.array(scale_data_y)
+    scale_data_y = np.array(scale_data_y)
 
   scaler1 = StandardScaler()
   scaler2 = StandardScaler()
