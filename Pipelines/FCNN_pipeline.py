@@ -40,7 +40,7 @@ def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
     DATAX = scale_data_x
     DATAY = scale_data_y
 
-  print(DATAX[:5])
+  print(DATAX)
   scaler1.fit(DATAX)
   scaler2.fit(DATAY)
   x0 = scaler1.transform(x00)
