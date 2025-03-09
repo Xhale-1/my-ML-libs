@@ -127,7 +127,7 @@ def special_plot(x, y, x_i, preds_i, ids2_list, n_cols=2):
 
         axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
         axs[row][col].scatter(x_true, y_true, s=5) #, label='True Data')
-        axs[row][col].set_title(f'График {ids2[i]}')
+        axs[row][col].set_title(f'График {ids2_list[i][0]}')
         axs[row][col].set_xlabel('time, %')
         axs[row][col].set_ylabel('y')
         #axs[row][col].legend()
