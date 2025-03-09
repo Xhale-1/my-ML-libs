@@ -82,7 +82,7 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
     n_rows = math.ceil(n_plots / n_cols)  # Округляем вверх
     
     # Создаём сетку графиков
-    fig, axs = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 5 * n_rows))
+    fig, axs = plt.subplots(n_rows, n_cols, figsize=(2 * n_cols, 2 * n_rows))
     
     # Если только один график, axs не будет массивом, преобразуем
     if n_plots == 1:
