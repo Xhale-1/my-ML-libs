@@ -50,10 +50,31 @@ def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
 
   return x,y,scaler1,scaler2
 
-def descale(x, scaler):
-  if isinstance(x, np.ndarray):
-    x= np.array(x)
-  return scaler.inverse_transform(x)
+
+
+
+
+def descale(x, scaler, col=-1):
+    """
+    Дескейлит данные, используя StandardScaler.
+    :param x: Данные для дескейла (массив или тензор).
+    :param scaler: Обученный StandardScaler.
+    :param col: Индекс колонки для дескейла. Если -1, дескейлит весь массив.
+    :return: Дескейленные данные.
+    """
+    if isinstance(x, torch.Tensor):
+        x = x.numpy()
+    
+    if col == -1:
+        # Дескейлим весь массив
+        x1 = scaler.inverse_transform(x)
+    else:
+        # Дескейлим только указанную колонку
+        mean = scaler.mean_[col]  
+        std = scaler.scale_[col]  
+        x1 = x * std + mean  
+    
+    return x1
 
 
 
