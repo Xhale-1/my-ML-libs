@@ -101,7 +101,7 @@ def special_preds(model, x, y, n_graphs=1):
 
 
 
-def special_plot(x, y, x_i, preds_i, n_cols=2):
+def special_plot(x, y, x_i, preds_i, ids2_list, n_cols=2):
 
     n_plots = len(preds_i)
     n_rows = math.ceil(n_plots / n_cols) 
@@ -122,9 +122,11 @@ def special_plot(x, y, x_i, preds_i, n_cols=2):
     for i in range(n_plots):
         row = i // n_cols  # Номер строки
         col = i % n_cols   # Номер столбца
+        x_true = x[ids2_list[i]]
+        y_true = y[ids2_list[i]]
 
         axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
-        axs[row][col].scatter(x[i], y[i], s=5) #, label='True Data')
+        axs[row][col].scatter(x_true, y_true, s=5) #, label='True Data')
         axs[row][col].set_title(f'График {ids2[i]}')
         axs[row][col].set_xlabel('time, %')
         axs[row][col].set_ylabel('y')
