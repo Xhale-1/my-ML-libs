@@ -107,7 +107,7 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                     pred = model(batch[0].to(device))
                     loss = criterion(pred, batch[1].to(device))
 
-                    total_loss += loss.item()
+                    total_loss += loss.item().cpu()
 
                     optimizer.zero_grad()
                     loss.backward()
@@ -123,8 +123,8 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
               sch.step()
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
-            print(f"pred: {pred[0].detach().numpy().round(3)}, loss для {k}: {average_loss}")
-            print(f"true: {batch[1][0].numpy().round(3)}")
+            print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
+            print(f"true: {batch[1][0].cpu().numpy().round(3)}")
     return avg_losses
 
 
