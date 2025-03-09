@@ -68,18 +68,16 @@ def special_preds(model, x, y, n_graphs=1):
     ids = np.arange(0,x.shape[0],100)
     ids2 = np.random.choice(ids, n_graphs, replace=False)
     
+    x_i = []
+    y_i = []
     x_pred_i = []
     preds_i = []
-    ids2_list = []
     for i in ids2:
 
       base = x[i, :4]
       time = torch.linspace(x[i:i+100, 4].min(), x[i:i+100, 4].max(), 1000)
-      new_rows = []
-      for j in time:
-          new_row = torch.cat((base, j.unsqueeze(0)))  
-          new_rows.append(new_row)
-      x1 = torch.stack(new_rows).reshape(-1, 5) 
+      new_rows = [torch.cat((base, j.unsqueeze(0))) for j in time]  # Создаем новые строки
+      x1 = torch.stack(new_rows).reshape(-1, 5)  # Формируем новый тензор
 
       loader = torch.utils.data.DataLoader(x1, batch_size=int(0.05 * x1.shape[0]), 
                                          shuffle=False, num_workers=2)
@@ -88,20 +86,21 @@ def special_preds(model, x, y, n_graphs=1):
       with torch.no_grad():
         for batch in loader:
             pred = model(batch)
-            preds.append(pred.reshape(-1,1))
+            preds.append(pred)
         preds = torch.cat(preds).detach()
 
+      x_i.append(x[i:i+100,4].reshape(-1,1))
+      y_i.append(y[i:i+100].reshape(-1,1)) 
       x_pred_i.append(time.reshape(-1,1))
-      preds_i.append(preds)
-      ids2_list.append(np.arange(i,i+100,1))
+      preds_i.append(preds.reshape(-1,1))
 
-    return x_pred_i, preds_i, ids2_list
-
+    return x_i, y_i, x_pred_i, preds_i
 
 
 
 
-def special_plot(x, y, x_i, preds_i, ids2_list, n_cols=2):
+
+def special_plot(x_i, y_i, x_pred_i, preds_i, n_cols=2):
 
     n_plots = len(preds_i)
     n_rows = math.ceil(n_plots / n_cols) 
@@ -122,11 +121,9 @@ def special_plot(x, y, x_i, preds_i, ids2_list, n_cols=2):
     for i in range(n_plots):
         row = i // n_cols  # Номер строки
         col = i % n_cols   # Номер столбца
-        x_true = x[ids2_list[i],4]
-        y_true = y[ids2_list[i]]
 
-        axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
-        axs[row][col].scatter(x_true, y_true, s=5) #, label='True Data')
+        axs[row][col].scatter(x_pred_i[i], preds_i[i], s=2) #, label='Predictions')
+        axs[row][col].scatter(x_i, y_i, s=5) #, label='True Data')
         axs[row][col].set_title(f'График {ids2_list[i][0]}')
         axs[row][col].set_xlabel('time, %')
         axs[row][col].set_ylabel('y')
