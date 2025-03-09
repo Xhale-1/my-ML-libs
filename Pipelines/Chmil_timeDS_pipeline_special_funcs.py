@@ -114,7 +114,7 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
         axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
         axs[row][col].scatter(x[start_idx:end_idx, 4], y[start_idx:end_idx], s=5) #, label='True Data')
         axs[row][col].set_title(f'График {ids2[i]}')
-        axs[row][col].set_xlabel('x[:, 4]')
+        axs[row][col].set_xlabel('t')
         axs[row][col].set_ylabel('y')
         #axs[row][col].legend()
 

@@ -50,6 +50,10 @@ def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
 
   return x,y,scaler1,scaler2
 
+def descale(x, scaler):
+  if isinstance(x, np.ndarray):
+    x= np.array(x)
+  return scaler.inverse_transform(x)
 
 
 
