@@ -44,9 +44,9 @@ def special_split(x, shuffle = 0):
     
     return tr, vl, ts
 
-
-
-
+def shuffle(ids):
+  ids = np.random.choice(ids,len(ids), replace = False)
+  return ids
 
 
 
