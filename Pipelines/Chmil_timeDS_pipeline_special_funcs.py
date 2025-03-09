@@ -88,10 +88,10 @@ def special_preds(model, x, y, n_graphs=1):
       with torch.no_grad():
         for batch in loader:
             pred = model(batch)
-            preds.append(pred.flatten())
+            preds.append(pred.reshape(-1,1))
         preds = torch.cat(preds).detach()
 
-      x_pred_i.append(time)
+      x_pred_i.append(time.reshape(-1,1))
       preds_i.append(preds)
       ids2_list.append(np.arange(i,i+100,1))
 
