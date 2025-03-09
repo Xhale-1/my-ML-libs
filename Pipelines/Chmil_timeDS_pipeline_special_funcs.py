@@ -59,27 +59,36 @@ import math
 
 
 def preds_uniq(model, x, y, n_plots=1, n_cols=2):
-    # Оптимизируем создание x1
-    base = x[0, :4]  # Базовые значения вне цикла
-    x1 = torch.tensor([])
-    time = torch.linspace(x[:, 4].min(), x[:, 4].max(), 1000)
-    for i in time:
-        new = torch.cat((base, i.unsqueeze(0)))
-        x1 = torch.cat((x1, new), 0)
-    x1 = x1.reshape(-1, 5)
+    
+    ids = np.arange(0,x.shape[0],100)
+    ids2 = np.random.choice(ids, n_plots, replace=False)
+    
+    x_i = []
+    preds_i = []
+    for i in ids2:
 
-    # Загрузка данных и предсказания
-    loader = torch.utils.data.DataLoader(x1, batch_size=int(0.05 * x1.shape[0]), 
+      base = x[i, :4]
+      time = torch.linspace(x[i:i+99, 4].min(), x[i:i+99, 4].max(), 1000)
+      new_rows = []
+      for j in time:
+          new_row = torch.cat((base, j.unsqueeze(0)))  
+          new_rows.append(new_row)
+      x1 = torch.stack(new_rows).reshape(-1, 5) 
+
+      loader = torch.utils.data.DataLoader(x1, batch_size=int(0.05 * x1.shape[0]), 
                                          shuffle=False, num_workers=2)
-    model.eval()
-    preds = []
-    for batch in loader:
-        pred = model(batch)
-        preds.append(pred.flatten())
-    preds = torch.cat(preds)
+      model.eval()
+      preds = []
+      for batch in loader:
+          pred = model(batch)
+          preds.append(pred.flatten())
+      preds = torch.cat(preds)
+
+      x_i.append(time)
+      preds_i.append(preds)
 
     # Вычисляем количество строк
-    n_rows = math.ceil(n_plots / n_cols)  # Округляем вверх
+    n_rows = math.ceil(n_plots / n_cols) 
     
     # Создаём сетку графиков
     fig, axs = plt.subplots(n_rows, n_cols, figsize=(3.5 * n_cols, 3.5 * n_rows))
@@ -97,13 +106,14 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
     for i in range(n_plots):
         row = i // n_cols  # Номер строки
         col = i % n_cols   # Номер столбца
-        start_idx = i * 100
-        end_idx = (i + 1) * 100
+        start_idx = ids2[i]
+        end_idx = ids2[i]+99
         if end_idx > x.shape[0]:  # Проверка выхода за пределы
             break
-        axs[row][col].scatter(x1[:, 4].flatten(), preds.flatten().detach(), s=2) #, label='Predictions')
+
+        axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
         axs[row][col].scatter(x[start_idx:end_idx, 4], y[start_idx:end_idx], s=5) #, label='True Data')
-        #axs[row][col].set_title(f'График {i + 1}')
+        axs[row][col].set_title(f'График {ids2[i]}')
         axs[row][col].set_xlabel('x[:, 4]')
         axs[row][col].set_ylabel('y')
         #axs[row][col].legend()
