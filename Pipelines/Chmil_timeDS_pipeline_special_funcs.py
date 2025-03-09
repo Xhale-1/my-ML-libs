@@ -82,7 +82,7 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
       for batch in loader:
           pred = model(batch)
           preds.append(pred.flatten())
-      preds = torch.cat(preds)
+      preds = torch.cat(preds).detach()
 
       x_i.append(time)
       preds_i.append(preds)
