@@ -107,7 +107,7 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                     pred = model(batch[0].to(device))
                     loss = criterion(pred, batch[1].to(device))
 
-                    total_loss += loss.item().cpu()
+                    total_loss += loss.cpu().item()
 
                     optimizer.zero_grad()
                     loss.backward()
