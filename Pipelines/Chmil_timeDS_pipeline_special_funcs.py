@@ -58,7 +58,7 @@ import math
 
 
 
-def special_preds(model, x, y, n_graphs=1):
+def special_preds(model, x, y, device, n_graphs=1):
     
     if not isinstance(x, torch.Tensor):
       x = torch.tensor(x,dtype = torch.float32)
@@ -86,8 +86,8 @@ def special_preds(model, x, y, n_graphs=1):
       preds = []
       with torch.no_grad():
         for batch in loader:
-            pred = model(batch)
-            preds.append(pred)
+            pred = model(batch.to(device))
+            preds.append(pred.cpu())
         preds = torch.cat(preds).detach()
 
       x_i.append(x[i:i+100,4].reshape(-1,1))
