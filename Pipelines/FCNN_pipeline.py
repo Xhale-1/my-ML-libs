@@ -99,7 +99,7 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
             print(f"pred: {pred[0].detach().numpy().round(3)}, loss для {k}: {average_loss}")
-            print(f"pred: {batch[1][0].numpy().round(3)}")
+            print(f"true: {batch[1][0].numpy().round(3)}")
     return avg_losses
 
 
