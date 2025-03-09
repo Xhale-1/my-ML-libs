@@ -142,7 +142,7 @@ def save_to_drive(model,name, path):
   shutil.copy(f"/content/{name}.pth", path)
 
 
-def predict(model,loader):
+def predict(model,loader, device):
   model.eval()
   preds = []
   for batch in loader:
@@ -152,8 +152,8 @@ def predict(model,loader):
   return preds
 
 
-def pred_results(model, trloader0, y, scaler2):
-  preds_tr = predict(model,trloader0)
+def pred_results(model, trloader0, y, scaler2, device):
+  preds_tr = predict(model,trloader0, device)
 
   preds1_tr = scaler2.inverse_transform(preds_tr.detach().numpy())
   y1_tr = scaler2.inverse_transform(y.detach().numpy())
