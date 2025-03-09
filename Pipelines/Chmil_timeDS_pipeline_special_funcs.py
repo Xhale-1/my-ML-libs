@@ -94,9 +94,9 @@ def preds_uniq(model, x, y, n_graphs=1):
 
       x_pred_i.append(time)
       preds_i.append(preds)
-      x_i.append(x[i:i+99])
-      y_i.append(y[i:i+99])
-      
+      x_i.append(x[i:i+99,4])
+      y_i.append(y[i:i+99,4])
+
     return x_pred_i, preds_i, x_i, y_i
 
 
@@ -124,13 +124,9 @@ def plot(x, y, x_i, preds_i, n_cols=2):
     for i in range(n_plots):
         row = i // n_cols  # Номер строки
         col = i % n_cols   # Номер столбца
-        start_idx = ids2[i]
-        end_idx = ids2[i]+99
-        if end_idx > x.shape[0]:  # Проверка выхода за пределы
-            break
 
         axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
-        axs[row][col].scatter(x[start_idx:end_idx, 4], y[start_idx:end_idx], s=5) #, label='True Data')
+        axs[row][col].scatter(x[i], y[i], s=5) #, label='True Data')
         axs[row][col].set_title(f'График {ids2[i]}')
         axs[row][col].set_xlabel('time, %')
         axs[row][col].set_ylabel('y')
