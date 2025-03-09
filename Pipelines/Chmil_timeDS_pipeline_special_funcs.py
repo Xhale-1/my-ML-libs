@@ -58,7 +58,7 @@ import math
 
 
 
-def preds_uniq(model, x, y, n_graphs=1):
+def special_preds(model, x, y, n_graphs=1):
     
     if not isinstance(x, torch.Tensor):
       x = torch.tensor(x,dtype = torch.float32)
@@ -70,12 +70,11 @@ def preds_uniq(model, x, y, n_graphs=1):
     
     x_pred_i = []
     preds_i = []
-    x_i = []
-    y_i = []
+    ids2_list = []
     for i in ids2:
 
       base = x[i, :4]
-      time = torch.linspace(x[i:i+99, 4].min(), x[i:i+99, 4].max(), 1000)
+      time = torch.linspace(x[i:i+100, 4].min(), x[i:i+99, 4].max(), 1000)
       new_rows = []
       for j in time:
           new_row = torch.cat((base, j.unsqueeze(0)))  
@@ -94,16 +93,15 @@ def preds_uniq(model, x, y, n_graphs=1):
 
       x_pred_i.append(time)
       preds_i.append(preds)
-      x_i.append(x[i:i+99,4])
-      y_i.append(y[i:i+99,4])
+      ids2_list.append(np.arange(ids2[i],ids2[i]+100,1))
 
-    return x_pred_i, preds_i, x_i, y_i
-
+    return x_pred_i, preds_i, ids2_list
 
 
 
 
-def plot(x, y, x_i, preds_i, n_cols=2):
+
+def special_plot(x, y, x_i, preds_i, n_cols=2):
 
     n_plots = len(preds_i)
     n_rows = math.ceil(n_plots / n_cols) 
