@@ -84,7 +84,7 @@ def preds_uniq(model, x, y, n_graphs=1):
                                          shuffle=False, num_workers=2)
       model.eval()
       preds = []
-      with torch.no_grad:
+      with torch.no_grad():
         for batch in loader:
             pred = model(batch)
             preds.append(pred.flatten())
