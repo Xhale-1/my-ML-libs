@@ -93,7 +93,7 @@ def special_preds(model, x, y, n_graphs=1):
 
       x_pred_i.append(time)
       preds_i.append(preds)
-      ids2_list.append(np.arange(ids2[i],ids2[i]+99,1))
+      ids2_list.append(np.arange(i,i+100,1))
 
     return x_pred_i, preds_i, ids2_list
 
