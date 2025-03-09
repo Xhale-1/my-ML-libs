@@ -72,6 +72,7 @@ def special_preds(model, x, y, n_graphs=1):
     y_i = []
     x_pred_i = []
     preds_i = []
+    ids21 = []
     for i in ids2:
 
       base = x[i, :4]
@@ -93,14 +94,15 @@ def special_preds(model, x, y, n_graphs=1):
       y_i.append(y[i:i+100].reshape(-1,1)) 
       x_pred_i.append(time.reshape(-1,1))
       preds_i.append(preds.reshape(-1,1))
+      ids21.append(i)
 
-    return x_i, y_i, x_pred_i, preds_i
-
-
-
+    return x_i, y_i, x_pred_i, preds_i, ids21
 
 
-def special_plot(x_i, y_i, x_pred_i, preds_i, n_cols=2):
+
+
+
+def special_plot(x_i, y_i, x_pred_i, preds_i, ids21, n_cols=2):
 
     n_plots = len(preds_i)
     n_rows = math.ceil(n_plots / n_cols) 
@@ -124,7 +126,7 @@ def special_plot(x_i, y_i, x_pred_i, preds_i, n_cols=2):
 
         axs[row][col].scatter(x_pred_i[i], preds_i[i], s=2) #, label='Predictions')
         axs[row][col].scatter(x_i, y_i, s=5) #, label='True Data')
-        axs[row][col].set_title(f'График {ids2_list[i][0]}')
+        axs[row][col].set_title(f'График {ids21[i]}')
         axs[row][col].set_xlabel('time, %')
         axs[row][col].set_ylabel('y')
         #axs[row][col].legend()
