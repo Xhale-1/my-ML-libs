@@ -53,15 +53,15 @@ def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
 
 
 
-def loaders(x,y,tr,vl,ts):
+def loaders(x,y,tr,vl,ts, bs = 0.01):
   trfakeds = list(zip(x[tr],y[tr]))
   vlfakeds = list(zip(x[vl],y[vl]))
   tsfakeds = list(zip(x[ts],y[ts]))
 
-  trloader = torch.utils.data.DataLoader(trfakeds, batch_size= int(0.01*len(trfakeds)), shuffle = True, num_workers=2)
-  trloader0 = torch.utils.data.DataLoader(trfakeds, batch_size= int(0.01*len(trfakeds)), shuffle = False, num_workers=2)
-  vlloader = torch.utils.data.DataLoader(vlfakeds, batch_size= int(0.1*len(vlfakeds)), shuffle = False, num_workers=2)
-  tsloader = torch.utils.data.DataLoader(tsfakeds, batch_size= int(0.1*len(tsfakeds)), shuffle = False, num_workers=2)
+  trloader = torch.utils.data.DataLoader(trfakeds, batch_size= int(bs*len(trfakeds)), shuffle = True, num_workers=2)
+  trloader0 = torch.utils.data.DataLoader(trfakeds, batch_size= int(bs*len(trfakeds)), shuffle = False, num_workers=2)
+  vlloader = torch.utils.data.DataLoader(vlfakeds, batch_size= int(2.5*bs*len(vlfakeds)), shuffle = False, num_workers=2)
+  tsloader = torch.utils.data.DataLoader(tsfakeds, batch_size= int(2.5*bs*len(tsfakeds)), shuffle = False, num_workers=2)
 
   return trloader, trloader0, vlloader, tsloader
 
