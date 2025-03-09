@@ -82,7 +82,7 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
     n_rows = math.ceil(n_plots / n_cols)  # Округляем вверх
     
     # Создаём сетку графиков
-    fig, axs = plt.subplots(n_rows, n_cols, figsize=(2 * n_cols, 2 * n_rows))
+    fig, axs = plt.subplots(n_rows, n_cols, figsize=(3.5 * n_cols, 3.5 * n_rows))
     
     # Если только один график, axs не будет массивом, преобразуем
     if n_plots == 1:
@@ -101,12 +101,12 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
         end_idx = (i + 1) * 100
         if end_idx > x.shape[0]:  # Проверка выхода за пределы
             break
-        axs[row][col].scatter(x1[:, 4].flatten(), preds.flatten().detach(), s=2, label='Predictions')
-        axs[row][col].scatter(x[start_idx:end_idx, 4], y[start_idx:end_idx], s=5, label='True Data')
-        axs[row][col].set_title(f'График {i + 1}')
+        axs[row][col].scatter(x1[:, 4].flatten(), preds.flatten().detach(), s=2) #, label='Predictions')
+        axs[row][col].scatter(x[start_idx:end_idx, 4], y[start_idx:end_idx], s=5) #, label='True Data')
+        #axs[row][col].set_title(f'График {i + 1}')
         axs[row][col].set_xlabel('x[:, 4]')
         axs[row][col].set_ylabel('y')
-        axs[row][col].legend()
+        #axs[row][col].legend()
 
     # Убираем лишние пустые графики, если их больше, чем n_plots
     for i in range(n_plots, n_rows * n_cols):
