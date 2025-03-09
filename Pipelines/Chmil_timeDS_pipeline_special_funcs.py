@@ -68,8 +68,10 @@ def preds_uniq(model, x, y, n_graphs=1):
     ids = np.arange(0,x.shape[0],100)
     ids2 = np.random.choice(ids, n_graphs, replace=False)
     
-    x_i = []
+    x_pred_i = []
     preds_i = []
+    x_i = []
+    y_i = []
     for i in ids2:
 
       base = x[i, :4]
@@ -90,10 +92,12 @@ def preds_uniq(model, x, y, n_graphs=1):
             preds.append(pred.flatten())
         preds = torch.cat(preds).detach()
 
-      x_i.append(time)
+      x_pred_i.append(time)
       preds_i.append(preds)
+      x_i.append(x[i:i+99])
+      y_i.append(y[i:i+99])
       
-    return x_i, preds_i
+    return x_pred_i, preds_i, x_i, y_i
 
 
 
