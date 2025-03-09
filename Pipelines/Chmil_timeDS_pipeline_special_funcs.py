@@ -60,6 +60,11 @@ import math
 
 def preds_uniq(model, x, y, n_plots=1, n_cols=2):
     
+    if not isinstance(x, torch.Tensor):
+      x = torch.tensor(x,dtype = torch.float32)
+    if not isinstance(y, torch.Tensor):
+      y = torch.tensor(y,dtype = torch.float32)
+    
     ids = np.arange(0,x.shape[0],100)
     ids2 = np.random.choice(ids, n_plots, replace=False)
     
