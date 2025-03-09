@@ -58,7 +58,7 @@ import math
 
 
 
-def preds_uniq(model, x, y, n_plots=1, n_cols=2):
+def preds_uniq(model, x, y, n_graphs=1):
     
     if not isinstance(x, torch.Tensor):
       x = torch.tensor(x,dtype = torch.float32)
@@ -66,7 +66,7 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
       y = torch.tensor(y,dtype = torch.float32)
     
     ids = np.arange(0,x.shape[0],100)
-    ids2 = np.random.choice(ids, n_plots, replace=False)
+    ids2 = np.random.choice(ids, n_graphs, replace=False)
     
     x_i = []
     preds_i = []
@@ -84,15 +84,24 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
                                          shuffle=False, num_workers=2)
       model.eval()
       preds = []
-      for batch in loader:
-          pred = model(batch)
-          preds.append(pred.flatten())
-      preds = torch.cat(preds).detach()
+      with torch.no_grad:
+        for batch in loader:
+            pred = model(batch)
+            preds.append(pred.flatten())
+        preds = torch.cat(preds).detach()
 
       x_i.append(time)
       preds_i.append(preds)
+      
+    return x_i, preds_i
 
-    # Вычисляем количество строк
+
+
+
+
+def plot(x, y, x_i, preds_i,  n_cols=2):
+
+    n_plots = len(preds_i)
     n_rows = math.ceil(n_plots / n_cols) 
     
     # Создаём сетку графиков
@@ -119,7 +128,7 @@ def preds_uniq(model, x, y, n_plots=1, n_cols=2):
         axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
         axs[row][col].scatter(x[start_idx:end_idx, 4], y[start_idx:end_idx], s=5) #, label='True Data')
         axs[row][col].set_title(f'График {ids2[i]}')
-        axs[row][col].set_xlabel('t')
+        axs[row][col].set_xlabel('time, %')
         axs[row][col].set_ylabel('y')
         #axs[row][col].legend()
 
