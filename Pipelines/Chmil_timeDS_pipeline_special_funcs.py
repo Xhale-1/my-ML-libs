@@ -99,7 +99,7 @@ def preds_uniq(model, x, y, n_graphs=1):
 
 
 
-def plot(x, y, x_i, preds_i,  n_cols=2):
+def plot(x, y, x_i, preds_i, n_cols=2):
 
     n_plots = len(preds_i)
     n_rows = math.ceil(n_plots / n_cols) 
