@@ -122,7 +122,7 @@ def special_plot(x, y, x_i, preds_i, ids2_list, n_cols=2):
     for i in range(n_plots):
         row = i // n_cols  # Номер строки
         col = i % n_cols   # Номер столбца
-        x_true = x[ids2_list[i]]
+        x_true = x[ids2_list[i],4]
         y_true = y[ids2_list[i]]
 
         axs[row][col].scatter(x_i[i], preds_i[i], s=2) #, label='Predictions')
