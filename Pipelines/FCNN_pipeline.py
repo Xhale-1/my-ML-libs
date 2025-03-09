@@ -142,7 +142,7 @@ def save_to_drive(model,name, path):
   shutil.copy(f"/content/{name}.pth", path)
 
 
-def predict(model,loader, device = 'cpu'):
+def predict(model,loader):
   model.eval()
   preds = []
   for batch in loader:
