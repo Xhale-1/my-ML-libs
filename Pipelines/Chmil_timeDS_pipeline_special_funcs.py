@@ -74,7 +74,7 @@ def special_preds(model, x, y, n_graphs=1):
     for i in ids2:
 
       base = x[i, :4]
-      time = torch.linspace(x[i:i+100, 4].min(), x[i:i+99, 4].max(), 1000)
+      time = torch.linspace(x[i:i+100, 4].min(), x[i:i+100, 4].max(), 1000)
       new_rows = []
       for j in time:
           new_row = torch.cat((base, j.unsqueeze(0)))  
