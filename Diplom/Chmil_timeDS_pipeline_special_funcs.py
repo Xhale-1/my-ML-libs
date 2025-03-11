@@ -33,8 +33,8 @@ def special_split(x, shuffle = 0):
       x = np.array(x)
 
     ids = np.arange(0, x.shape[0] - 1)
-    near1 = round(int(0.67 * len(ids)) / 100) * 100
-    near2 = round(int(0.83 * len(ids)) / 100) * 100
+    near1 = round(int(0.67 * len(ids)) / 101) * 101
+    near2 = round(int(0.83 * len(ids)) / 101) * 101
     tr, vl, ts = np.split(ids, [near1, near2])
 
     if shuffle:
