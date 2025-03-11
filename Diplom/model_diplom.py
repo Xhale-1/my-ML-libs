@@ -29,5 +29,5 @@ class net(nn.Module):
     return self.fc9(x)
 
 
-model = net().to(device)
+#model = net().to(device)
 #print(model(torch.tensor(data.iloc[:5,:5].to_numpy(), dtype=torch.float32).to(device)))
