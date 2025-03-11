@@ -65,7 +65,7 @@ def special_preds(model, x, y, device, n_graphs=1):
     if not isinstance(y, torch.Tensor):
       y = torch.tensor(y,dtype = torch.float32)
     
-    ids = np.arange(0,x.shape[0],100)
+    ids = np.arange(0,x.shape[0],101)
     ids2 = np.random.choice(ids, n_graphs, replace=False)
     
     x_i = []
