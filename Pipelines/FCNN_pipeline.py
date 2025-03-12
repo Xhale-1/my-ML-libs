@@ -124,7 +124,7 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                     model.eval()
                     pred = model(batch[0].to(device))
                     loss = criterion(pred, batch[1].to(device))
-                    total_loss += loss.item()
+                    total_loss += loss.cpu().item()
 
             if not sch is None:
               sch.step()
