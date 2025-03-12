@@ -152,11 +152,15 @@ def predict(model,loader, device):
   return preds
 
 
-def pred_results(model, trloader0, y, scaler2, device):
+
+def pred_results(model, trloader0, y, device, scaler2 = 0):
   preds_tr = predict(model,trloader0, device)
 
-  preds1_tr = scaler2.inverse_transform(preds_tr.detach().numpy())
-  y1_tr = scaler2.inverse_transform(y.detach().numpy())
+  preds1_tr = preds_tr.detach().numpy()
+  y1_tr = y.detach().numpy()
+  if isinstance(scaler2, StandardScaler):
+    preds1_tr = scaler2.inverse_transform(preds_tr.detach().numpy())
+    y1_tr = scaler2.inverse_transform(y.detach().numpy())
 
   print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
 
