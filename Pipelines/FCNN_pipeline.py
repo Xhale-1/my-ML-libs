@@ -164,7 +164,7 @@ def pred_results(model, trloader0, y, device, scaler2 = 0):
   preds_tr = predict(model,trloader0, device)
 
   preds1_tr = preds_tr.detach().numpy()
-  y1_tr = y.detach().numpy()
+  y1_tr = y.detach().numpy() if isinstance(y, torch.Tensor) else y
   if isinstance(scaler2, StandardScaler):
     preds1_tr = scaler2.inverse_transform(preds_tr.detach().numpy())
     y1_tr = scaler2.inverse_transform(y.detach().numpy())
