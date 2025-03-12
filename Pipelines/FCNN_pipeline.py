@@ -80,9 +80,9 @@ def descale(x, scaler, col=-1):
 
 def loaders(x,y,tr,vl,ts, bs = 0.01):
 
-  if isinstance(x, torch.Tensor):
+  if not isinstance(x, torch.Tensor):
     x = torch.tensor(x, dtype = torch.float32)
-  if isinstance(x, torch.Tensor):
+  if not isinstance(x, torch.Tensor):
     y = torch.tensor(y, dtype = torch.float32)
   trfakeds = list(zip(x[tr],y[tr]))
   vlfakeds = list(zip(x[vl],y[vl]))
