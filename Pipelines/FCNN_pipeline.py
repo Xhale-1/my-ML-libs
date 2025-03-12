@@ -163,8 +163,13 @@ def predict(model,loader, device):
 def pred_results(model, trloader0, y, device, scaler2 = 0):
   preds_tr = predict(model,trloader0, device)
 
+  if isinstance(y, torch.Tensor):
+    y = y.detach().numpy()
+  else:
+    y = np.array(y)
+
   preds1_tr = preds_tr.detach().numpy()
-  y1_tr = y.detach().numpy() if isinstance(y, torch.Tensor) else y
+  y1_tr = y
   if isinstance(scaler2, StandardScaler):
     preds1_tr = scaler2.inverse_transform(preds_tr.detach().numpy())
     y1_tr = scaler2.inverse_transform(y.detach().numpy())
