@@ -171,7 +171,7 @@ def pred_results(model, trloader0, y, device, scaler2 = 0):
   preds1_tr = preds_tr.detach().numpy()
   y1_tr = y
   if isinstance(scaler2, StandardScaler):
-    preds1_tr = scaler2.inverse_transform(preds_tr)
+    preds1_tr = scaler2.inverse_transform(preds1_tr)
     y1_tr = scaler2.inverse_transform(y)
 
   print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
