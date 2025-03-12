@@ -140,6 +140,7 @@ def err_plot(losses):
   plt.plot(losses['train'], c = 'red')
   plt.plot(losses['valid'])
   plt.yscale('log')
+  plt.legend()
   plt.show()
 
 
