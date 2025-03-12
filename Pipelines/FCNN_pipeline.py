@@ -82,10 +82,10 @@ def loaders(x,y,tr,vl,ts, bs = 0.01):
 
   if not isinstance(x, torch.Tensor):
     x = torch.tensor(x, dtype = torch.float32)
-  if not isinstance(x, torch.Tensor):
+  if not isinstance(y, torch.Tensor):
     y = torch.tensor(y, dtype = torch.float32)
   
-  print(x.dtype, y.dtype)
+  #print(x.dtype, y.dtype)
   trfakeds = list(zip(x[tr],y[tr]))
   vlfakeds = list(zip(x[vl],y[vl]))
   tsfakeds = list(zip(x[ts],y[ts]))
