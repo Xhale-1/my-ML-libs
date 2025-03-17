@@ -119,8 +119,8 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                     optimizer.zero_grad()
                     loss.backward()
                     optimizer.step()
-                    if not sch is None:
-                      sch.step()
+                    #if not sch is None:
+                    #  sch.step()
 
                 if k == 'valid':
                     model.eval()
@@ -128,6 +128,8 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                     loss = criterion(pred, batch[1].to(device))
                     total_loss += loss.cpu().item()
 
+            if not sch is None:
+                sch.step()
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
             print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
