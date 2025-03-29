@@ -100,7 +100,7 @@ def loaders(x,y,tr,vl,ts, bs = 0.01):
 
 
 
-def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu', sch = None):
+def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu', sch = None, print_loss = 1):
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
     for epoch in range(eps):
@@ -132,8 +132,9 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                 sch.step()
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
-            print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
-            print(f"true: {batch[1][0].cpu().numpy().round(3)}")
+            if(print_loss):
+              print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
+              print(f"true: {batch[1][0].cpu().numpy().round(3)}")
     return avg_losses
 
 
