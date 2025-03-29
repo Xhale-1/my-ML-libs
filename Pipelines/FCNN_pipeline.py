@@ -178,7 +178,8 @@ def pred_results(model, trloader0, y, device, scaler2 = 0, print_loss = 1):
     preds1_tr = scaler2.inverse_transform(preds1_tr)
     y1_tr = scaler2.inverse_transform(y)
 
-  print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
+  if print_loss:
+    print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
 
   rmse = sklearn.metrics.root_mean_squared_error
   rmse0 = rmse(y1_tr,preds1_tr)
