@@ -63,7 +63,7 @@ def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
   y0 = scaler2.transform(y00)
 
   x = torch.tensor(x0, dtype = torch.float32)
-  y = torch.tensor(y0, dtype = torch.float32).reshape(-1,1)
+  y = torch.tensor(y0, dtype = torch.float32)
 
   return x,y,scaler1,scaler2
 
