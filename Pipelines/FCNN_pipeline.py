@@ -105,21 +105,26 @@ def loaders(x,y,prop_array, bs = 0.01):
 
   fakedss = []
   loaders = []
+
   for prop in prop_array:
-    fakeds = list(zip(x[prop],y[prop]))
+    x_prop = x[prop]
+    y_prop = y[prop]
+
+    fakeds = torch.utils.data.TensorDataset(x_prop, y_prop)
     fakedss.append(fakeds)
 
   for i, fakeds in enumerate(fakedss):
-    shuffle = True if i == 0 else False  # Только первый DataLoader перемешивается
+    shuffle = (i == 0)
     batch_size = int(bs * len(fakeds)) if i == 0 else int(2.5 * bs * len(fakeds))
-        
+    
     loader = torch.utils.data.DataLoader(
-            fakeds,
-            batch_size=batch_size,
-            shuffle=shuffle,
-            num_workers=2 )
-            
+        fakeds,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=2
+    )
     loaders.append(loader)
+
 
   return loaders
 
