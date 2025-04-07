@@ -160,7 +160,7 @@ class DynamicNet(nn.Module):
     
 
     self.layers.append(nn.Linear(array[-1], outputshape))
-    self.layers.append(nn.Softmax())
+    self.layers.append(nn.Softmax(dim=1))
 
     self.to(device)
       
