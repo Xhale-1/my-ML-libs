@@ -37,35 +37,44 @@ def split_train(x00, proportions):
 
 
 
-def scale(x00,y00, scale_data = 0, scale_data_x = 0, scale_data_y = 0 ):
 
-  if not isinstance(x00, np.ndarray):
-    x00 = np.array(x00)
-  if not isinstance(y00, np.ndarray):
-    y00 = np.array(y00)
-  if not isinstance(scale_data_x, np.ndarray):
-    scale_data_x = np.array(scale_data_x)
-  if not isinstance(scale_data_y, np.ndarray):
-    scale_data_y = np.array(scale_data_y)
+def scale(objs, scale_data=None):
+    """
+    Масштабирует данные с использованием StandardScaler.
 
-  scaler1 = StandardScaler()
-  scaler2 = StandardScaler()
+    :param objs: Список объектов (массивов или списков), которые нужно масштабировать.
+    :param scale_data: Список объектов (массивов или списков), на которых обучается scaler.
+                       Если None, используется `objs` для обучения scaler.
+    :return: Кортеж из двух элементов:
+             - scaled_objs: Список масштабированных объектов (тензоры PyTorch).
+             - scalers: Список обученных StandardScaler.
+    """
+    scalers = []
+    scaled_objs = []
 
-  DATAX = x00
-  DATAY = y00
-  if scale_data:
-    DATAX = scale_data_x
-    DATAY = scale_data_y
+    # Если scale_data не предоставлено, используем objs для обучения scaler
+    if scale_data is None:
+        scale_data = objs
 
-  scaler1.fit(DATAX)
-  scaler2.fit(DATAY)
-  x0 = scaler1.transform(x00)
-  y0 = scaler2.transform(y00)
 
-  x = torch.tensor(x0, dtype = torch.float32)
-  y = torch.tensor(y0, dtype = torch.float32)
+    for x00, scale_data_x in zip(objs, scale_data):
 
-  return x,y,scaler1,scaler2
+        if not isinstance(x00, np.ndarray):
+            x00 = np.array(x00)
+        if not isinstance(scale_data_x, np.ndarray):
+            scale_data_x = np.array(scale_data_x)
+
+        scaler = StandardScaler()
+        scaler.fit(scale_data_x)
+
+        x_scaled = scaler.transform(x00)
+
+        x_tensor = torch.tensor(x_scaled, dtype=torch.float32)
+
+        scalers.append(scaler)
+        scaled_objs.append(x_tensor)
+
+    return scaled_objs, scalers
 
 
 
