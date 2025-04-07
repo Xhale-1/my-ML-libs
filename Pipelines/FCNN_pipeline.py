@@ -13,10 +13,24 @@ import shutil
 
 
 
-def split_train(x00):
-  ids = np.random.choice(len(x00), len(x00), replace=False)
-  tr,vl,ts = np.split(ids, [int(0.63 * len(x00)), int(0.79 * len(x00)) ])
-  return tr,vl,ts
+def split_train(x00, proportions):
+    """
+    Разделяет массив индексов на части согласно заданным пропорциям.
+
+    Параметры:
+        x00: исходный массив данных (или его длина).
+        proportions: список пропорций для разбиения (например, [0.6, 0.8, 0.9]).
+
+    Возвращает:
+        Кортеж массивов индексов.
+    """
+    ids = np.random.choice(len(x00), len(x00), replace=False) # Генерация случайных индексов без повторений
+    split_indices = [int(prop * len(x00)) for prop in proportions] #создание листа индексов пропорций
+    parts = np.split(ids, split_indices)
+    
+    return parts
+
+
 
 
 
