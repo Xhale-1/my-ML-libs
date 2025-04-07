@@ -132,7 +132,7 @@ def loaders(x,y,prop_array, bs = 0.01):
 
 
 class DynamicNet(nn.Module):
-  def __init__(self, array, device):
+  def __init__(self, array, inputshape, outputshape, device):
     super().__init__()
 
     self.layers = nn.Sequential()
