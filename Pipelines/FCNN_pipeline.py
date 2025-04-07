@@ -92,24 +92,33 @@ def descale(x, scaler, col=-1):
 
 
 
-def loaders(x,y,tr,vl,ts, bs = 0.01):
+def loaders(x,y,prop_array, bs = 0.01):
 
   if not isinstance(x, torch.Tensor):
     x = torch.tensor(x, dtype = torch.float32)
   if not isinstance(y, torch.Tensor):
     y = torch.tensor(y, dtype = torch.float32)
   
-  #print(x.dtype, y.dtype)
-  trfakeds = list(zip(x[tr],y[tr]))
-  vlfakeds = list(zip(x[vl],y[vl]))
-  tsfakeds = list(zip(x[ts],y[ts]))
 
-  trloader = torch.utils.data.DataLoader(trfakeds, batch_size= int(bs*len(trfakeds)), shuffle = True, num_workers=2)
-  trloader0 = torch.utils.data.DataLoader(trfakeds, batch_size= int(bs*len(trfakeds)), shuffle = False, num_workers=2)
-  vlloader = torch.utils.data.DataLoader(vlfakeds, batch_size= int(2.5*bs*len(vlfakeds)), shuffle = False, num_workers=2)
-  tsloader = torch.utils.data.DataLoader(tsfakeds, batch_size= int(2.5*bs*len(tsfakeds)), shuffle = False, num_workers=2)
+  fakedss = []
+  loaders = []
+  for prop in prop_array:
+    fakeds = list(zip(x[prop],y[prop]))
+    fakedss.append(fakeds)
 
-  return trloader, trloader0, vlloader, tsloader
+  for i, fakeds in enumerate(fakedss):
+    shuffle = True if i == 0 else False  # Только первый DataLoader перемешивается
+    batch_size = int(bs * len(fakeds)) if i == 0 else int(2.5 * bs * len(fakeds))
+        
+    loader = torch.utils.data.DataLoader(
+            fakeds,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            num_workers=2 )
+            
+    loaders.append(loader)
+
+  return loaders
 
 
 
