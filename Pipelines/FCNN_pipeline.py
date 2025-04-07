@@ -5,14 +5,17 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import torch
+from torch import nn
 import sklearn
 import shutil
 
 
 
 
+#____________IMPORT_____________________
+#_______________________________________
 
-#hello
+
 def split_train(x00, proportions):
     """
     Разделяет массив индексов на части согласно заданным пропорциям.
@@ -120,6 +123,50 @@ def loaders(x,y,prop_array, bs = 0.01):
 
   return loaders
 
+
+
+
+
+#_________________MODEL____________________
+#__________________________________________
+
+
+class DynamicNet(nn.Module):
+  def __init__(self, array, device):
+    super().__init__()
+
+    self.layers = nn.Sequential()
+    self.act = nn.LeakyReLU()
+
+    prev_num = 12
+    for i in range(len(array)):
+      self.layers.append(nn.Linear(prev_num, array[i]))
+      self.layers.append(self.act)
+      prev_num = array[i]
+    
+
+    self.layers.append(nn.Linear(array[-1], 3))
+    self.layers.append(nn.Softmax())
+
+    self.to(device)
+      
+
+    
+  def forward(self, x):
+    x = self.layers(x)
+    return x
+
+#model = net([10,12])
+#print(model(torch.randn(10,12)))
+
+
+
+
+
+
+
+#____________________LEARNING________________________
+#____________________________________________________
 
 
 
