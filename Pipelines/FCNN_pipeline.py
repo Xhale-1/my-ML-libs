@@ -12,7 +12,7 @@ import shutil
 
 
 
-
+#hello
 def split_train(x00, proportions):
     """
     Разделяет массив индексов на части согласно заданным пропорциям.
