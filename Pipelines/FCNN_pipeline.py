@@ -245,7 +245,7 @@ def predict(model,loader, device):
     for batch in loader:
       pred = model(batch[0].to(device))
       preds.append(pred.cpu())
-      ys.append(batch[0])
+      ys.append(batch[1])
   preds = torch.cat((preds),0)
   ys = torch.cat((ys),0)
   return preds, ys
