@@ -240,12 +240,15 @@ def save_to_drive(model,name, path):
 def predict(model,loader, device):
   model.eval()
   preds = []
+  ys = []
   with torch.no_grad():
     for batch in loader:
       pred = model(batch[0].to(device))
       preds.append(pred.cpu())
+      ys.append(batch[0])
   preds = torch.cat((preds),0)
-  return preds
+  ys = torch.cat((ys),0)
+  return preds, ys
 
 
 
