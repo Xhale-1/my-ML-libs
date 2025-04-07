@@ -138,14 +138,14 @@ class DynamicNet(nn.Module):
     self.layers = nn.Sequential()
     self.act = nn.LeakyReLU()
 
-    prev_num = 12
+    prev_num = inputshape
     for i in range(len(array)):
       self.layers.append(nn.Linear(prev_num, array[i]))
       self.layers.append(self.act)
       prev_num = array[i]
     
 
-    self.layers.append(nn.Linear(array[-1], 3))
+    self.layers.append(nn.Linear(array[-1], outputshape))
     self.layers.append(nn.Softmax())
 
     self.to(device)
