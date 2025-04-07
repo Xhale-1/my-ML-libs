@@ -95,33 +95,33 @@ def descale(x, scaler, col=-1):
 
 
 
-def loaders(x, y, prop_array, bs=0.01):
-    # Преобразуем входные данные в тензоры, если они еще не являются таковыми
-    if not isinstance(x, torch.Tensor):
-        x = torch.tensor(x, dtype=torch.float32)
-    if not isinstance(y, torch.Tensor):
-        y = torch.tensor(y, dtype=torch.float32)
+def loaders(x,y,prop_array, bs = 0.01):
 
-    loaders = []
+  if not isinstance(x, torch.Tensor):
+    x = torch.tensor(x, dtype = torch.float32)
+  if not isinstance(y, torch.Tensor):
+    y = torch.tensor(y, dtype = torch.float32)
+  
 
-    for i, prop in enumerate(prop_array):
-        # Используем генератор вместо списка
-        fakeds = ((x_val, y_val) for x_val, y_val in zip(x[prop], y[prop]))
+  fakedss = []
+  loaders = []
+  for prop in prop_array:
+    fakeds = list(zip(x[prop],y[prop]))
+    fakedss.append(fakeds)
 
-        # Определяем параметры DataLoader
-        shuffle = True if i == 0 else False  # Только первый DataLoader перемешивается
-        batch_size = int(bs * len(x[prop])) if i == 0 else int(2.5 * bs * len(x[prop]))
-
-        # Создаем DataLoader
-        loader = torch.utils.data.DataLoader(
-            dataset=list(fakeds),  # Преобразуем генератор в список только при необходимости
+  for i, fakeds in enumerate(fakedss):
+    shuffle = True if i == 0 else False  # Только первый DataLoader перемешивается
+    batch_size = int(bs * len(fakeds)) if i == 0 else int(2.5 * bs * len(fakeds))
+        
+    loader = torch.utils.data.DataLoader(
+            fakeds,
             batch_size=batch_size,
             shuffle=shuffle,
-            num_workers=2
-        )
-        loaders.append(loader)
+            num_workers=2 )
+            
+    loaders.append(loader)
 
-    return loaders
+  return loaders
 
 
 
