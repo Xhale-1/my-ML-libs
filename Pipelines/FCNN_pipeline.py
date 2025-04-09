@@ -104,7 +104,7 @@ def descale(x, scaler, col=-1):
 
 
 
-def loaders(x,y,prop_array, bs = 0.01):
+def loaders(x,y,prop_array, bs = 0.01, addtr = 0):
 
   if not isinstance(x, torch.Tensor):
     x = torch.tensor(x, dtype = torch.float32)
@@ -112,17 +112,14 @@ def loaders(x,y,prop_array, bs = 0.01):
     y = torch.tensor(y, dtype = torch.float32)
   
 
-  fakedss = []
   loaders = []
 
-  for prop in prop_array:
+  for i,prop in enumerate(prop_array):
     x_prop = x[prop]
     y_prop = y[prop]
 
     fakeds = torch.utils.data.TensorDataset(x_prop, y_prop)
-    fakedss.append(fakeds)
 
-  for i, fakeds in enumerate(fakedss):
     shuffle = (i == 0)
     batch_size = int(bs * len(fakeds)) if i == 0 else int(2.5 * bs * len(fakeds))
     
@@ -134,7 +131,15 @@ def loaders(x,y,prop_array, bs = 0.01):
     )
     loaders.append(loader)
 
-
+    if addtr and i==0:
+        loader = torch.utils.data.DataLoader(
+        fakeds,
+        batch_size=int(2.5 * bs * len(fakeds)),
+        shuffle=False,
+        num_workers=2
+        )
+        loaders.append(loader)
+        
   return loaders
 
 
