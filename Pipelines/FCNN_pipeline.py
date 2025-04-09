@@ -262,7 +262,7 @@ def predict(model,loader, device, yss=0):
 
 
 def pred_results(model, trloader0, y, device, scaler2 = 0, print_loss = 1):
-  preds_tr = predict(model,trloader0, device)
+  [preds_tr] = predict(model,trloader0, device)
 
   if isinstance(y, torch.Tensor):
     y = y.detach().numpy()
