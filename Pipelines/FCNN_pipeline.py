@@ -139,7 +139,7 @@ def loaders(x,y,prop_array, bs = 0.01, addtr = 0):
         num_workers=2
         )
         loaders.append(loader)
-        
+
   return loaders
 
 
@@ -241,18 +241,23 @@ def save_to_drive(model,name, path):
   shutil.copy(f"/content/{name}.pth", path)
 
 
-def predict(model,loader, device):
+def predict(model,loader, device, yss=0):
   model.eval()
   preds = []
   ys = []
+  out = []
   with torch.no_grad():
     for batch in loader:
       pred = model(batch[0].to(device))
       preds.append(pred.cpu())
-      ys.append(batch[1])
+      if yss:
+        ys.append(batch[1])
   preds = torch.cat((preds),0)
-  ys = torch.cat((ys),0)
-  return preds, ys
+  out.apppend(preds)
+  if yss:
+    ys = torch.cat((ys),0)
+    out.append(yss)
+  return out
 
 
 
