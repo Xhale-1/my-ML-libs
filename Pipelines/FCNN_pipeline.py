@@ -253,7 +253,7 @@ def predict(model,loader, device, yss=0):
       if yss:
         ys.append(batch[1])
   preds = torch.cat((preds),0)
-  out.apppend(preds)
+  out.append(preds)
   if yss:
     ys = torch.cat((ys),0)
     out.append(yss)
