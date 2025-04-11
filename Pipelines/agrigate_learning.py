@@ -92,59 +92,41 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 
 
+
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-def objective(trial):
-    n_layers = trial.suggest_int("n_layers", 1, 15)
-    layer_configs = [trial.suggest_int(f"layer_{i+1}_neurons", 1, 250) for i in range(n_layers)]
+def make_objective(print_loss, feat, eps):
+  def objective(trial):
+      n_layers = trial.suggest_int("n_layers", 1, 15)
+      layer_configs = [trial.suggest_int(f"layer_{i+1}_neurons", 1, 250) for i in range(n_layers)]
 
-    #batch_size = trial.suggest_float("batch_size", 0.005, 0.3)
-    batch_size = 0.015
-    #lr0 = trial.suggest_float("lr0", 0.01, 1.0)
-    lr0 = 0.035
-    #lr1 = trial.suggest_float("lr1", 0.00001, 0.01)
-    lr1 = 0.0002
+      #batch_size = trial.suggest_float("batch_size", 0.005, 0.3)
+      batch_size = 0.015
+      #lr0 = trial.suggest_float("lr0", 0.01, 1.0)
+      lr0 = 0.018
+      #lr1 = trial.suggest_float("lr1", 0.00001, 0.01)
+      lr1 = 0.0003
 
-    model = create_fcnn(4, layer_configs, 1)
-    loss = pipe2(model, data, feat=4, bs=batch_size, lr0=lr0, lr1=lr1, eps=80, device=device)
-    #n_params = count_parameters(model)
+      model = DynamicNet(4,layer_configs,1, device)
+      loss = pipe2(model, data, feat=feat, bs=batch_size, lr0=lr0, lr1=lr1, eps=eps, device=device, print_loss = print_loss)
 
-    return loss#, n_params
-
-
-study = optuna.create_study(directions=["minimize"])#, "minimize"])
-study.optimize(objective, n_trials=30)
-
-# Извлекаем данные для графика
-# losses, sizes = zip(*[(t.values[0], t.values[1]) for t in study.trials if t.values])
-
-# График Pareto front
-# plt.figure(figsize=(8, 6))
-# plt.scatter(sizes, losses, c="blue", label="Модели")
-# plt.xlabel("Число параметров (меньше — лучше)")
-# plt.ylabel("Ошибка MSE (меньше — лучше)")
-# plt.title("Pareto Front: Оптимальные модели")
-# plt.legend()
-# plt.show()
-
-# Вывод лучших моделей
-best_trials = sorted(study.best_trials, key=lambda t: (t.values[0]))#, t.values[1]))
-for i, trial in enumerate(best_trials[:5], 1):
-    print(f"Модель {i}: Слои={trial.params['n_layers']}, Loss={trial.values[0]:.4f}")#, Параметров={trial.values[1]}")
-    print("Конфигурация слоев:", [trial.params[f"layer_{j+1}_neurons"] for j in range(trial.params['n_layers'])])
-    #print(f"Batch size: {trial.params['batch_size']:.3f}, lr0: {trial.params['lr0']:.5f}, lr1: {trial.params['lr1']:.5f}\n")
+      return loss
+  return objective
 
 
-# Выбираем топ-5 моделей с наименьшей ошибкой
-successful_trials = [t for t in study.trials if t.values]  # Фильтруем успешные испытания
-best_trials = sorted(successful_trials, key=lambda t: t.values[0])[:5]  # Сортируем по MSE (первая цель)
-
-# Выводим топ-5 моделей
-for i, trial in enumerate(best_trials, 1):
-    print(f"Модель {i}: Слои={trial.params['n_layers']}, Loss={trial.values[0]:.4f}")#, Параметров={trial.values[1]}")
-    print("Конфигурация слоев:", [trial.params[f"layer_{j+1}_neurons"] for j in range(trial.params['n_layers'])])
-    #print(f"Batch size: {trial.params['batch_size']:.3f}, lr0: {trial.params['lr0']:.5f}, lr1: {trial.params['lr1']:.5f}\n")
 
 
+for feat in range(8,9,1):
+  study = optuna.create_study(directions=["minimize"])
+  study.optimize(make_objective(print_loss=0, feat = feat, eps = 70), n_trials=100)
+
+  print("_________________________________")
+  print(f"feature: {feat}")
+  successful_trials = [t for t in study.trials if t.values]
+  best_trials = sorted(successful_trials, key=lambda t: t.values[0])[:5]
+  for i, trial in enumerate(best_trials, 1):
+      print(f"Модель {i}: Слои={trial.params['n_layers']}, Loss={trial.values[0]:.6f}")
+      print("Конфигурация слоев:", [trial.params[f"layer_{j+1}_neurons"] for j in range(trial.params['n_layers'])])
+  print("__________________________________")
