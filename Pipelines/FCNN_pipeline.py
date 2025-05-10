@@ -242,6 +242,14 @@ def save_to_drive(model,name, path):
   shutil.copy(f"/content/{name}.pth", path)
 
 
+
+
+
+
+#_________INFERENCE________________________
+#_____________________________________________
+
+
 def predict(model,loader, device, yss=0):
   model.eval()
   preds = []
@@ -262,7 +270,7 @@ def predict(model,loader, device, yss=0):
 
 
 
-def pred_results(model, trloader0, y, device, scaler2 = 0, print_loss = 1):
+def inference(model, trloader0, y, device, scaler2 = 0, print_loss = 1):
   [preds_tr] = predict(model,trloader0, device)
 
   if isinstance(y, torch.Tensor):
