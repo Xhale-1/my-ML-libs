@@ -62,6 +62,8 @@ def scale(objs, scale_data=None):
 
         if not isinstance(x00, np.ndarray):
             x00 = np.array(x00)
+            if len(x00.shape) == 1:
+               x00 = x00.reshape(-1,1)
         if not isinstance(scale_data_x, np.ndarray):
             scale_data_x = np.array(scale_data_x)
             if len(scale_data_x.shape) == 1:
