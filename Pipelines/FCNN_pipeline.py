@@ -64,6 +64,8 @@ def scale(objs, scale_data=None):
             x00 = np.array(x00)
         if not isinstance(scale_data_x, np.ndarray):
             scale_data_x = np.array(scale_data_x)
+            if len(scale_data_x.shape) == 1:
+               scale_data_x = scale_data_x.reshape(-1,1)
 
         scaler = StandardScaler()
         scaler.fit(scale_data_x)
