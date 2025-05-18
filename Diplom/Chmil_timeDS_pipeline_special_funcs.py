@@ -57,9 +57,9 @@ def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
     if print_loss:
       print(f'rmse test: {rmse0}')
     
-    relerr = np.abs(y1_tr -  preds1_tr) / y1_tr
+    relerr = ( np.abs(y1_tr -  preds1_tr) / y1_tr ) *100
     maxrelerr = relerr.max()
-    print(f'макс относительная ошибка = {maxrelerr} ({i})')
+    print(f'макс относительная ошибка (%) = {maxrelerr} ({i})')
     
   return preds_tr, preds1_tr, rmse0
 
