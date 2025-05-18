@@ -208,7 +208,9 @@ def learning(trloader,
 
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
-    window = 0
+    if autopilot:
+      au_window = 0
+      au_slope = 1
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -241,15 +243,15 @@ def learning(trloader,
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
 
         if autopilot:
-          window += + 1
-          if  window == autopilot:
+          au_window += 1
+          if  au_window == autopilot:
             lastlossdata = avg_losses['valid'][-autopilot:]
             x_regr = np.arange(len(lastlossdata)).reshape(-1, 1)
             y_regr = np.array(lastlossdata)
             y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
             reg = LinearRegression().fit(x_regr, y_regr_norm)
             slope = reg.coef_[0]
-            window = 0
+            au_window = 0
 
         if not sch is None:
           if autopilot:
