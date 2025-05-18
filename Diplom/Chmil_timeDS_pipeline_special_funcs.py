@@ -2,7 +2,6 @@ from sklearn.metrics import root_mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from os import replace
 import numpy as np
-import numpy as np
 import torch
 
 
@@ -56,6 +55,10 @@ def inference2(model, loaders, y, device, scaler2 = 0, print_loss = 1):
     rmse0 = root_mean_squared_error(y1_tr, preds1_tr)
     if print_loss:
       print(f'rmse test: {rmse0}')
+    
+    relerr = np.abs(y1_tr -  preds1_tr) / y1_tr
+    maxrelerr = relerr.max()
+    print(maxrelerr)
     
   return preds_tr, preds1_tr, rmse0
 
