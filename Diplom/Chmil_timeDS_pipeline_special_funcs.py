@@ -37,7 +37,7 @@ def predict(model,loaders, device, yss=0):
 def inference2(model, loaders, y, device, scaler2 = 0, print_loss = 1):
   
   for loader in loaders:
-    [preds_tr], _ = predict(model,loader, device)
+    [preds_tr], _ = predict(model,[loader], device)
 
     if isinstance(y, torch.Tensor):
       y = y.detach().numpy()
