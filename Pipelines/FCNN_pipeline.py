@@ -203,8 +203,8 @@ def learning(trloader,
              device = 'cpu', 
              sch = None, 
              print_loss = 1, 
-             earlystop = 0, 
-             extr_slope = -0.005):
+             earlystop = 0, extr_slope = -0.008,
+             autopilot = 0, auto_slope = -0.03):
 
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
@@ -241,8 +241,23 @@ def learning(trloader,
               print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
 
+        if autopilot:
+          err_num = err_num + 1
+          if  err_num == autopilot:
+            window = avg_losses['valid'][-autopilot:]
+            x_regr = np.arange(len(early)).reshape(-1, 1)
+            y_regr = np.array(early)
+            y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
+            reg = LinearRegression().fit(x_regr, y_regr_norm)
+            slope = reg.coef_[0]
+            err_num = 0
+
         if not sch is None:
-          sch.step()
+          if autopilot:
+            if slope > extr_slope and slope <= 0:
+              sch.step()
+          else:
+            sch.step()
         
         if earlystop:
           err_num = err_num + 1
