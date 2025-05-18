@@ -1,9 +1,69 @@
-
+from sklearn.metrics import root_mean_squared_error
+from sklearn.preprocessing import StandardScaler
 from os import replace
 import numpy as np
 import numpy as np
 
-    
+
+#____________intergral___________
+#________________________________
+
+
+
+def predict(model,loader, device, yss=0):
+  model.eval()
+  preds = []
+  ys = []
+  out = []
+  with torch.no_grad():
+    for batch in loader:
+      pred = model(batch[0].to(device))
+      preds.append(pred.cpu())
+      if yss:
+        ys.append(batch[1])
+  preds = torch.cat((preds),0)
+  out.append(preds)
+  if yss:
+    ys = torch.cat((ys),0)
+    out.append(yss)
+  return out
+
+
+
+def inference2(model, trloader0, y, device, scaler2 = 0, print_loss = 1):
+  [preds_tr] = predict(model,trloader0, device)
+
+  if isinstance(y, torch.Tensor):
+    y = y.detach().numpy()
+  else:
+    y = np.array(y)
+
+  preds1_tr = preds_tr.detach().numpy()
+  y1_tr = y
+  if isinstance(scaler2, StandardScaler):
+    preds1_tr = scaler2.inverse_transform(preds1_tr)
+    y1_tr = scaler2.inverse_transform(y)
+
+  if print_loss:
+    print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
+
+
+  rmse0 = root_mean_squared_error(y1_tr, preds1_tr)
+  if print_loss:
+    print(f'rmse test: {rmse0}')
+  return preds_tr, preds1_tr, rmse0
+
+
+
+
+
+
+
+
+
+
+#____________time_________________
+#_________________________________
 
 def shuffle_within_hundreds(arr):
         # Определяем количество полных сотен
