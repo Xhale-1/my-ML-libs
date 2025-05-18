@@ -10,6 +10,7 @@ import sklearn
 from sklearn.metrics import root_mean_squared_error
 import shutil
 from sklearn.linear_model import LinearRegression
+from tqdm import tqdm
 
 
 
@@ -211,7 +212,7 @@ def learning(trloader,
     if earlystop:
       err_num = 0
 
-    for epoch in range(eps):
+    for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
             total_loss = 0  # Для подсчёта среднего MSE
 
