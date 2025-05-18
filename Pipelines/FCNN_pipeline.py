@@ -257,7 +257,7 @@ def learning(trloader,
             err_num = 0
             if slope > extr_slope:
               current_lr = optimizer.param_groups[0]['lr']
-              print(f'early stopped at ep:{epoch}, lr={current_lr}, vl_loss={avg_losses["valid"][-1]}')
+              print(f'early stopped at ep:{epoch}, lr={current_lr}, vl_loss={avg_losses["valid"][-1]}, slope = {slope}')
               break
     
     return avg_losses
