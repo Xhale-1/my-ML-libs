@@ -194,7 +194,18 @@ class DynamicNet(nn.Module):
 
 
 
-def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu', sch = None, print_loss = 1, earlystop = 0, extr_slope = -0.005):
+def learning(trloader, 
+             vlloader, 
+             criterion, 
+             model, 
+             optimizer, 
+             eps, 
+             device = 'cpu', 
+             sch = None, 
+             print_loss = 1, 
+             earlystop = 0, 
+             extr_slope = -0.005):
+
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
     if earlystop:
@@ -244,6 +255,8 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
             slope = reg.coef_[0]
             err_num = 0
             if slope > extr_slope:
+              current_lr = optimizer.param_groups[0]['lr']
+              print(f'early stopped at ep:{epoch}, lr={current_lr}')
               break
     
     return avg_losses
