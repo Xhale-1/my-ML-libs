@@ -9,6 +9,7 @@ from torch import nn
 import sklearn
 from sklearn.metrics import root_mean_squared_error
 import shutil
+from sklearn.linear_model import LinearRegression
 
 
 
@@ -193,12 +194,12 @@ class DynamicNet(nn.Module):
 
 
 
-def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu', sch = None, print_loss = 1, earlystop = 0):
+def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu', sch = None, print_loss = 1, earlystop = 0, extr_slope = -0.005):
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
-    
     if earlystop:
-      lastkerr = []
+      err_num = 0
+
     for epoch in range(eps):
         for k, loader in loaders.items():
             total_loss = 0  # Для подсчёта среднего MSE
@@ -215,8 +216,6 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                     optimizer.zero_grad()
                     loss.backward()
                     optimizer.step()
-                    #if not sch is None:
-                    #  sch.step()
 
                 if k == 'valid':
                     model.eval()
@@ -226,14 +225,27 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
 
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
-            #if earlystop:
-            #  lastkerr.append()
-            if not sch is None:
-                if  k == 'train':
-                  sch.step()
+
             if(print_loss):
               print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
+
+        if not sch is None:
+          sch.step()
+        
+        if earlystop:
+          err_num = err_num + 1
+          if  err_num == earlystop:
+            early = avg_losses['valid'][-earlystop:]
+            x_regr = np.arange(len(early)).reshape(-1, 1)
+            y_regr = np.array(early)
+            y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
+            reg = LinearRegression().fit(x_regr, y_regr_norm)
+            slope = reg.coef_[0]
+            err_num = 0
+            if slope > extr_slope:
+              break
+    
     return avg_losses
 
 
