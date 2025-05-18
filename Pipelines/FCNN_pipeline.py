@@ -204,7 +204,7 @@ def learning(trloader,
              sch = None, 
              print_loss = 1, 
              earlystop = 0, extr_slope = -0.008,
-             autopilot = 0, auto_slope = -0.03):
+             autopilot = 0, au_extr_slope = -0.03):
 
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
@@ -255,7 +255,7 @@ def learning(trloader,
 
         if not sch is None:
           if autopilot:
-            if slope > extr_slope and slope <= 0:
+            if au_slope > au_extr_slope and slope <= 0:
               sch.step()
               print(sch.get_last_lr())
           else:
