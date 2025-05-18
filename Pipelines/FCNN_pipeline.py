@@ -256,6 +256,7 @@ def learning(trloader,
           if autopilot:
             if slope > extr_slope and slope <= 0:
               sch.step()
+              print(sch.get_last_lr())
           else:
             sch.step()
         
