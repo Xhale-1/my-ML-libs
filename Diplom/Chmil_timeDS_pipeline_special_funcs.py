@@ -33,9 +33,10 @@ def predict(model,loaders, device, yss=0):
 
 
 
-def inference2(model, loaders, y, device, scaler2 = 0, print_loss = 1):
+def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
   
-  for i,loader in enumerate(loaders):
+  data = zip(loaders,ys)
+  for i,(loader,y) in enumerate(data):
     [preds_tr], _ = predict(model,[loader], device)
 
     if isinstance(y, torch.Tensor):
