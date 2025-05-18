@@ -249,7 +249,7 @@ def learning(trloader,
             y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
             reg = LinearRegression().fit(x_regr, y_regr_norm)
             slope = reg.coef_[0]
-            err_num = 0
+            window = 0
 
         if not sch is None:
           if autopilot:
