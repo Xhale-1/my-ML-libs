@@ -243,9 +243,9 @@ def learning(trloader,
         if autopilot:
           window += + 1
           if  window == autopilot:
-            window = avg_losses['valid'][-autopilot:]
-            x_regr = np.arange(len(early)).reshape(-1, 1)
-            y_regr = np.array(early)
+            lastlossdata = avg_losses['valid'][-autopilot:]
+            x_regr = np.arange(len(lastlossdata)).reshape(-1, 1)
+            y_regr = np.array(lastlossdata)
             y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
             reg = LinearRegression().fit(x_regr, y_regr_norm)
             slope = reg.coef_[0]
