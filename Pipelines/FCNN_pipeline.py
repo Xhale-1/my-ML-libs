@@ -255,7 +255,7 @@ def learning(trloader,
             reg = LinearRegression().fit(x_regr, y_regr_norm)
             slope = reg.coef_[0]
             err_num = 0
-            if slope > extr_slope:
+            if slope > extr_slope and slope <= 0:
               current_lr = optimizer.param_groups[0]['lr']
               print(f'early stopped at ep:{epoch}, lr={current_lr}, vl_loss={avg_losses["valid"][-1]}, slope = {slope}')
               break
