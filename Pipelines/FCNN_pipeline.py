@@ -193,9 +193,12 @@ class DynamicNet(nn.Module):
 
 
 
-def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu', sch = None, print_loss = 1):
+def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu', sch = None, print_loss = 1, earlystop = 0):
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
+    
+    if earlystop:
+      lastkerr = []
     for epoch in range(eps):
         for k, loader in loaders.items():
             total_loss = 0  # Для подсчёта среднего MSE
@@ -221,10 +224,12 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
                     loss = criterion(pred, batch[1].to(device))
                     total_loss += loss.cpu().item()
 
-            if not sch is None:
-                sch.step()
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
+            #if earlystop:
+            #  lastkerr.append()
+            if not sch is None:
+                sch.step()
             if(print_loss):
               print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
