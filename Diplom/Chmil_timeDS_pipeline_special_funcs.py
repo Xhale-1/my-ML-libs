@@ -35,7 +35,7 @@ def predict(model,loaders, device, yss=0):
 
 def inference2(model, loaders, y, device, scaler2 = 0, print_loss = 1):
   
-  for loader in loaders:
+  for i,loader in enumerate(loaders):
     [preds_tr], _ = predict(model,[loader], device)
 
     if isinstance(y, torch.Tensor):
@@ -58,7 +58,7 @@ def inference2(model, loaders, y, device, scaler2 = 0, print_loss = 1):
     
     relerr = np.abs(y1_tr -  preds1_tr) / y1_tr
     maxrelerr = relerr.max()
-    print(maxrelerr)
+    print(f'макс относительная ошибка = {maxrelerr} ({i})')
     
   return preds_tr, preds1_tr, rmse0
 
