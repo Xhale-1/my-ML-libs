@@ -229,7 +229,8 @@ def learning(trloader, vlloader, criterion, model, optimizer, eps, device = 'cpu
             #if earlystop:
             #  lastkerr.append()
             if not sch is None:
-                sch.step()
+                if  k == 'train':
+                  sch.step()
             if(print_loss):
               print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
