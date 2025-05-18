@@ -208,8 +208,7 @@ def learning(trloader,
 
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
-    if earlystop:
-      err_num = 0
+    window = 0
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -242,8 +241,8 @@ def learning(trloader,
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
 
         if autopilot:
-          err_num = err_num + 1
-          if  err_num == autopilot:
+          window += + 1
+          if  window == autopilot:
             window = avg_losses['valid'][-autopilot:]
             x_regr = np.arange(len(early)).reshape(-1, 1)
             y_regr = np.array(early)
