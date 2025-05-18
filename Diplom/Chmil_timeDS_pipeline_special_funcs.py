@@ -61,11 +61,11 @@ def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
     maxrelerr = relerr.max()
     print(f'макс относительная ошибка (%) = {maxrelerr} ({i})')
 
-    rmspe = ((((y1_tr -  preds1_tr) / y1_tr)**2).sum()).mean()
-    print(rmspe)
-    maape = ((np.abs((y1_tr -  preds1_tr) / y1_tr)).sum()).mean()
-    print(maape)
-    
+    rmspe = ((((y1_tr -  preds1_tr) / y1_tr)**2).sum()) / y1_tr.shape[0]
+    print(f'rmspe: {rmspe}')
+    maape = ((np.abs((y1_tr -  preds1_tr) / y1_tr)).sum()) / y1_tr.shape[0]
+    print(f'maape: {maape}')
+
   return preds_tr, preds1_tr, rmse0
 
 
