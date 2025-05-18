@@ -7,7 +7,6 @@ import numpy as np
 import torch
 from torch import nn
 import sklearn
-from sklearn.metrics import root_mean_squared_error
 import shutil
 from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
@@ -329,7 +328,7 @@ def inference(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
     if print_loss:
       print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
 
-    rmse0 = root_mean_squared_error(y1_tr, preds1_tr)
+    rmse0 = np.sqrt(((y1_tr -  preds1_tr)**2).mean())
     if print_loss:
       print(f'rmse test: {rmse0}')
     
