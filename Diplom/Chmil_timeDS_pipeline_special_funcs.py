@@ -63,12 +63,67 @@ def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
     mtrcs.append(maxrelerr)
     print(f'макс относительная ошибка (%) = {maxrelerr} ({i})')
 
-    rmspe = ((((y1_tr -  preds1_tr) / y1_tr)**2).sum()) / y1_tr.shape[0]
-    mtrcs.append(rmspe)
-    print(f'rmspe: {rmspe}')
-    maape = ((np.abs((y1_tr -  preds1_tr) / y1_tr)).sum()) / y1_tr.shape[0]
-    mtrcs.append(maape)
-    print(f'maape: {maape}')
+
+    
+    ids = np.arange(0,y1_tr.shape[0],101)
+    y1_tr_parts = np.split(y1_tr,ids)
+    preds1_tr_parts = np.split(preds1_tr,ids)
+    zip_parts = zip(preds1_tr_parts, y1_tr_parts)
+    rmspe_ls = []
+    maape_ls = []
+    for pr, y1 in zip_parts:
+      pr = np.array(pr)
+      y1 = np.array(y1)
+      rmspe = np.sqrt((((y1 -  pr) / y1)**2).mean())
+      rmspe_ls.apped(rmspe)
+      maape = (np.abs((y1 -  pr) / y1)).mean()
+      maape_ls.append(maape)
+
+    rmspe_max = np.array(rmspe_ls).max()
+    maape_max = np.array(maape_ls).max()
+    mtrcs.append(rmspe_max)
+    print(f'rmspe: {rmspe_max}')
+    mtrcs.append(maape_max)
+    print(f'maape: {maape_max}'
+
+    chunk_size = 101
+    n_chunks = len(y1_tr) // chunk_size + (1 if len(y1_tr) % chunk_size != 0 else 0)
+    y1_tr_parts = np.array_split(y1_tr, n_chunks)
+    preds1_tr_parts = np.array_split(preds1_tr, n_chunks)
+    
+    rmspe_ls = []
+    maape_ls = []
+    
+    for pr, y1 in zip(preds1_tr_parts, y1_tr_parts):
+        # Убедимся, что массивы не пустые
+        if len(y1) == 0 or len(pr) == 0:
+            continue
+            
+        # Защита от деления на ноль
+        mask = y1 != 0
+        if not np.any(mask):
+            continue
+            
+        y1_part = y1[mask]
+        pr_part = pr[mask]
+        
+        # Вычисляем метрики только для ненулевых значений
+        relative_errors = (y1_part - pr_part) / y1_part
+        rmspe = np.sqrt(np.mean(relative_errors**2))
+        maape = np.mean(np.abs(np.arctan(relative_errors)))  # Для MAAPE обычно используют арктангенс
+        
+        rmspe_ls.append(rmspe)
+        maape_ls.append(maape)
+    
+    if rmspe_ls and maape_ls:
+        rmspe_max = np.max(rmspe_ls)
+        maape_max = np.max(maape_ls)
+        mtrcs.append(rmspe_max)
+        print(f'rmspe: {rmspe_max}')
+        mtrcs.append(maape_max)
+        print(f'maape: {maape_max}')
+    else:
+        print("Не удалось вычислить метрики - возможно, все значения y1_tr равны нулю")
     
     metrics.append(mtrcs)
     
