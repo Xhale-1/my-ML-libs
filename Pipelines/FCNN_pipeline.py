@@ -260,8 +260,9 @@ def learning(trloader,
               no_improve += 1
           
           if no_improve >= patience:
-              print(f'Early stopped at ep:{epoch}: valid_loss не улучшился {patience} эпох подряд')
-              break
+            print(' ')
+            print(f'Early stopped at ep:{epoch}: valid_loss не улучшился {patience} эпох подряд')
+            break
             
 
 
