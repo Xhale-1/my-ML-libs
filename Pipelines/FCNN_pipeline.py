@@ -298,17 +298,30 @@ def learning(trloader,
         
 
         if overfit:
-          if not earlystop:
-            patience = 0
-            best_valid_loss = np.inf
-          state = {'of_window': of_window, 'patience': patience, 'best_valid_loss' : best_valid_loss}
-          check_overfit_and_adjust_lr(optimizer = optimizer, 
-                                      avg_losses = avg_losses, 
-                                      overfit = overfit, 
-                                      lr_surge = lr_surge,
-                                      state = state)
+            if not earlystop:
+                patience = 0
+                best_valid_loss = np.inf
+                
+            state = {
+                'of_window': of_window, 
+                'patience': patience, 
+                'best_valid_loss': best_valid_loss
+            }
+            
+            lr_was_adjusted = check_overfit_and_adjust_lr(
+                optimizer=optimizer, 
+                avg_losses=avg_losses, 
+                overfit=overfit, 
+                lr_surge=lr_surge,
+                state=state
+            )
 
-    
+            # Обновляем глобальные переменные из state
+            of_window = state['of_window']
+            patience = state['patience']
+            best_valid_loss = state['best_valid_loss']
+
+
     return avg_losses
 
 
@@ -345,6 +358,7 @@ def check_overfit_and_adjust_lr(optimizer,
               state['patience'] = 0
             if state['best_valid_loss']:
               state['best_valid_loss'] = np.inf
+
             cur_lr = optimizer.param_groups[0]['lr']
             new_lr = lr_surge * cur_lr
             
