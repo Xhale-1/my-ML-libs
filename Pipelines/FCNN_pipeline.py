@@ -204,7 +204,8 @@ def learning(trloader,
              sch = None, 
              print_loss = 1, 
              earlystop = 0, extr_slope = -0.008,
-             autopilot = 0, au_extr_slope = -0.03):
+             autopilot = 0, au_extr_slope = -0.03,
+             overfit = 0):
 
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
@@ -213,6 +214,8 @@ def learning(trloader,
       au_slope = 0
       batch_loss = []
       batch_all =[]
+    if overfit:
+      of_window = 0 
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -272,6 +275,15 @@ def learning(trloader,
               print(f'sch step and lr ={sch.get_last_lr()}')
           else:
             sch.step()
+        
+        if overfit:
+          of_window += 1
+          if of_window == overfit:
+            of_window = 0
+            av_dif = avg_losses['valid'][-overfit:] - avg_losses['train'][-overfit:] 
+            if av_dif > 0:
+              for param_group in optimizer.param_groups:
+                param_group['lr'] = 0.02
         
         if earlystop:
           err_num = err_num + 1
