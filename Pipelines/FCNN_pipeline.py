@@ -255,9 +255,9 @@ def learning(trloader,
           au_window += 1
           if  au_window == autopilot:
             au_window = 0
-            batch_loss = []
 
             lastlossdata = batch_loss
+            batch_loss = []
             #lastlossdata = avg_losses['valid'][-autopilot:]
             x_regr = np.arange(len(lastlossdata)).reshape(-1, 1)
             y_regr = np.array(lastlossdata)
