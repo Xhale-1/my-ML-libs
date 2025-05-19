@@ -34,7 +34,7 @@ def predict(model,loaders, device, yss=0):
 
 
 def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
-  
+  metrics = []
   data = zip(loaders,ys)
   for i,(loader,y) in enumerate(data):
     [preds_tr], _ = predict(model,[loader], device)
@@ -53,20 +53,27 @@ def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
     if print_loss:
       print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
 
+    mtrcs = []
     rmse0 = root_mean_squared_error(y1_tr, preds1_tr)
+    mtrcs.append(rmse0)
     if print_loss:
       print(f'rmse test: {rmse0}')
     
     relerr = ( np.abs(y1_tr -  preds1_tr) / y1_tr ) *100
     maxrelerr = relerr.max()
+    mtrcs.append(maxrelerr)
     print(f'макс относительная ошибка (%) = {maxrelerr} ({i})')
 
     rmspe = ((((y1_tr -  preds1_tr) / y1_tr)**2).sum()) / y1_tr.shape[0]
+    mtrcs.append(rmspe)
     print(f'rmspe: {rmspe}')
     maape = ((np.abs((y1_tr -  preds1_tr) / y1_tr)).sum()) / y1_tr.shape[0]
+    mtrcs.append(maape)
     print(f'maape: {maape}')
-
-  return preds_tr, preds1_tr, rmse0
+    
+    metrics.append(mtrcs)
+    
+  return preds_tr, preds1_tr, metrics
 
 
 
