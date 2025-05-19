@@ -1,4 +1,3 @@
-from sklearn.metrics import root_mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from os import replace
 import numpy as np
@@ -54,7 +53,7 @@ def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
       print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
 
     mtrcs = []
-    rmse0 = root_mean_squared_error(y1_tr, preds1_tr)
+    rmse0 = np.sqrt(((y1_tr - preds1_tr)**2).mean())
     mtrcs.append(rmse0)
     if print_loss:
       print(f'rmse test: {rmse0}')
