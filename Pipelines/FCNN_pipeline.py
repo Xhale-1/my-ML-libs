@@ -265,7 +265,8 @@ def learning(trloader,
 
         if not sch is None:
           if autopilot:
-            if au_slope > au_extr_slope and au_slope <= 0:
+            #if au_slope > au_extr_slope and au_slope <= 0:
+            if au_slope > 0:
               sch.step()
               print(sch.get_last_lr())
           else:
