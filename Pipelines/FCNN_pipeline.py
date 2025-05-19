@@ -268,7 +268,7 @@ def learning(trloader,
             #if au_slope > au_extr_slope and au_slope <= 0:
             if au_slope > 0:
               sch.step()
-              print(sch.get_last_lr())
+              print(f'sch step and lr ={sch.get_last_lr()}')
           else:
             sch.step()
         
