@@ -203,7 +203,7 @@ def learning(trloader,
              device = 'cpu', 
              sch = None, 
              print_loss = 1, 
-             earlystop = 0, coef = 1,
+             earlystop = 0, patience = 14,
              autopilot = 0,
              overfit = 0, lr_surge = 3):
 
@@ -217,7 +217,6 @@ def learning(trloader,
       of_window = 0
     if earlystop:
       best_valid_loss = np.inf
-      patience = 14
       no_improve = 0
 
     for epoch in tqdm(range(eps)):
