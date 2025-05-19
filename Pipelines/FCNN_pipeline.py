@@ -310,28 +310,35 @@ def learning(trloader,
                 patience = 0
                 best_valid_loss = np.inf
                 
-            state = {
-                'of_window': of_window, 
-                'patience': patience, 
-                'best_valid_loss': best_valid_loss
-            }
+            # state = {
+            #     'of_window': of_window, 
+            #     'patience': patience, 
+            #     'best_valid_loss': best_valid_loss
+            # }
             
-            lr_was_adjusted = check_overfit_and_adjust_lr(
-                optimizer=optimizer, 
-                avg_losses=avg_losses, 
-                overfit=overfit, 
-                lr_surge=lr_surge,
-                of_break = of_break,
-                state=state
-            )
+            # lr_was_adjusted = check_overfit_and_adjust_lr(
+            #     optimizer=optimizer, 
+            #     avg_losses=avg_losses, 
+            #     overfit=overfit, 
+            #     lr_surge=lr_surge,
+            #     of_break = of_break,
+            #     state=state
+            # )
 
-            # Обновляем глобальные переменные из state
-            of_window = state['of_window']
-            patience = state['patience']
-            best_valid_loss = state['best_valid_loss']
+            # # Обновляем глобальные переменные из state
+            # of_window = state['of_window']
+            # patience = state['patience']
+            # best_valid_loss = state['best_valid_loss']
 
-            if of_break:
-              break
+            of_window += 1
+            if of_window == overfit:
+              of_window = 0
+              last_valid_losses = np.array(avg_losses['valid'][-overfit:])
+              last_train_losses = np.array(avg_losses['train'][-overfit:])
+              all_valid_higher = np.all(last_valid_losses > last_train_losses)
+              if all_valid_higher:
+                  if of_break:
+                    break
 
     if bestmodel and best_model_state is not None:
         model.load_state_dict(best_model_state)
@@ -340,53 +347,53 @@ def learning(trloader,
     return avg_losses, model
 
 
-def check_overfit_and_adjust_lr(optimizer, 
-                                avg_losses, 
-                                overfit, 
-                                lr_surge,
-                                of_break,
-                                state):
-    """
-    Проверяет, переобучается ли модель, и увеличивает LR, если valid_loss > train_loss на протяжении `overfit` эпох.
+# def check_overfit_and_adjust_lr(optimizer, 
+#                                 avg_losses, 
+#                                 overfit, 
+#                                 lr_surge,
+#                                 of_break,
+#                                 state):
+#     """
+#     Проверяет, переобучается ли модель, и увеличивает LR, если valid_loss > train_loss на протяжении `overfit` эпох.
     
-    Параметры:
-    - optimizer: оптимизатор (PyTorch)
-    - avg_losses: словарь с 'train' и 'valid' лоссами (например, {'train': [0.5, 0.4, ...], 'valid': [0.6, 0.5, ...]})
-    - overfit: количество эпох для проверки переобучения
-    - lr_surge: множитель для увеличения LR (например, 1.5)
+#     Параметры:
+#     - optimizer: оптимизатор (PyTorch)
+#     - avg_losses: словарь с 'train' и 'valid' лоссами (например, {'train': [0.5, 0.4, ...], 'valid': [0.6, 0.5, ...]})
+#     - overfit: количество эпох для проверки переобучения
+#     - lr_surge: множитель для увеличения LR (например, 1.5)
     
-    Возвращает:
-    - lr_was_adjusted: bool (True, если LR был изменён)
-    """
-    state['of_window'] += 1
-    lr_was_adjusted = False
+#     Возвращает:
+#     - lr_was_adjusted: bool (True, если LR был изменён)
+#     """
+#     state['of_window'] += 1
+#     lr_was_adjusted = False
     
-    if state['of_window'] == overfit:
-        state['of_window'] = 0
-        last_valid_losses = np.array(avg_losses['valid'][-overfit:])
-        last_train_losses = np.array(avg_losses['train'][-overfit:])
+#     if state['of_window'] == overfit:
+#         state['of_window'] = 0
+#         last_valid_losses = np.array(avg_losses['valid'][-overfit:])
+#         last_train_losses = np.array(avg_losses['train'][-overfit:])
         
-        # Проверяем, что ВСЕ valid_loss > train_loss
-        all_valid_higher = np.all(last_valid_losses > last_train_losses)
+#         # Проверяем, что ВСЕ valid_loss > train_loss
+#         all_valid_higher = np.all(last_valid_losses > last_train_losses)
         
-        if all_valid_higher:
-            if of_break:
-              return
-            if state['patience']:
-              state['patience'] = 0
-            if state['best_valid_loss']:
-              state['best_valid_loss'] = np.inf
+#         if all_valid_higher:
+#             if of_break:
+#               return
+#             if state['patience']:
+#               state['patience'] = 0
+#             if state['best_valid_loss']:
+#               state['best_valid_loss'] = np.inf
 
-            cur_lr = optimizer.param_groups[0]['lr']
-            new_lr = lr_surge * cur_lr
+#             cur_lr = optimizer.param_groups[0]['lr']
+#             new_lr = lr_surge * cur_lr
             
-            for param_group in optimizer.param_groups:
-                param_group['lr'] = new_lr
+#             for param_group in optimizer.param_groups:
+#                 param_group['lr'] = new_lr
             
-            print(f"[Overfit detected] LR увеличен в {lr_surge}x: {cur_lr:.2e} → {new_lr:.2e}")
-            lr_was_adjusted = True
+#             print(f"[Overfit detected] LR увеличен в {lr_surge}x: {cur_lr:.2e} → {new_lr:.2e}")
+#             lr_was_adjusted = True
     
-    return lr_was_adjusted
+#     return lr_was_adjusted
 
 
 def err_plot(losses):
