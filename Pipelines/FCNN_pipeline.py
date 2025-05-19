@@ -269,7 +269,7 @@ def learning(trloader,
             
             # Ранняя остановка (если earlystop=True)
             if earlystop and no_improve >= patience:
-                print(f'\nEarly stopped at epoch {epoch}')
+                print(f'\nEarly stopped at ep:{epoch}, because {patience} eps no better vl_los')
                 break
             
 
@@ -338,6 +338,7 @@ def learning(trloader,
               all_valid_higher = np.all(last_valid_losses > last_train_losses)
               if all_valid_higher:
                   if of_break:
+                    print(f'early stopped at ep:{epoch} because {overfit} eps vl_loss > tr_loss')
                     break
 
     if bestmodel and best_model_state is not None:
