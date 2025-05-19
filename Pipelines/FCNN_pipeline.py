@@ -280,7 +280,7 @@ def learning(trloader,
           of_window += 1
           if of_window == overfit:
             of_window = 0
-            av_dif = avg_losses['valid'][-overfit:] - avg_losses['train'][-overfit:] 
+            av_dif = (np.array(avg_losses['valid'][-overfit:]) - np.array(avg_losses['train'][-overfit:])).mean() 
             if av_dif > 0:
               for param_group in optimizer.param_groups:
                 param_group['lr'] = 0.02
