@@ -445,8 +445,10 @@ def predict(model,loaders, device, yss=0):
 
 
 
-def inference(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
-  
+
+def inference(model, loaders, ys, device, metrics_func, scaler2 = 0, print_loss = 1):
+  metrics = []
+
   data = zip(loaders,ys)
   for i,(loader,y) in enumerate(data):
     [preds_tr], _ = predict(model,[loader], device)
@@ -469,8 +471,8 @@ def inference(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
     if print_loss:
       print(f'rmse test: {rmse0}')
     
-    relerr = ( np.abs(y1_tr -  preds1_tr) / y1_tr ) *100
-    maxrelerr = relerr.max()
-    print(f'макс относительная ошибка (%) = {maxrelerr} ({i})')
-    
-  return preds_tr, preds1_tr, rmse0
+
+    result = metrics_func(y1_tr, preds1_tr,i)
+    metrics.append(result)
+
+  return preds_tr, preds1_tr, rmse0, result
