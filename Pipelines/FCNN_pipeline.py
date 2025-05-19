@@ -263,7 +263,8 @@ def learning(trloader,
                 
                 if bestmodel:  # Сохраняем модель только если bestmodel=True
                     best_model_state = deepcopy(model.state_dict())
-                    print(f"New best model! Val loss: {best_valid_loss:.4f}")
+                    if print_loss:
+                      print(f"New best model! Val loss: {best_valid_loss:.4f}")
             else:
                 no_improve += 1
             
@@ -288,10 +289,11 @@ def learning(trloader,
             reg = LinearRegression().fit(x_regr, y_regr_norm)
             au_slope = reg.coef_[0]
 
-            print(' ')
-            print(f'au_slope = {au_slope}')
-            current_lr = optimizer.param_groups[0]['lr']
-            print(f'lr = {current_lr}')
+            if print_loss:
+              print(' ')
+              print(f'au_slope = {au_slope}')
+              current_lr = optimizer.param_groups[0]['lr']
+              print(f'lr = {current_lr}')
 
 
         if not sch is None:
@@ -300,7 +302,8 @@ def learning(trloader,
             if au_slope > 0:
               au_slope = 0
               sch.step()
-              print(f'sch step and lr ={sch.get_last_lr()}')
+              if print_loss:
+                print(f'sch step and lr ={sch.get_last_lr()}')
           else:
             sch.step()
         
