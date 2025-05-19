@@ -219,6 +219,7 @@ def learning(trloader,
       es_window = 0
       pr_mean = np.inf
       pr_std = np.inf
+      es_batch_loss = []
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -243,6 +244,7 @@ def learning(trloader,
                     loss = criterion(pred, batch[1].to(device))
                     total_loss += loss.cpu().item()
                     batch_loss.append(loss.cpu().item())
+                    es_batch_loss.append(loss.cpu().item())
 
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
@@ -250,6 +252,21 @@ def learning(trloader,
             if(print_loss):
               print(f"pred: {pred[0].cpu().detach().numpy().round(3)}, loss для {k}: {average_loss}")
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
+
+
+        if earlystop:
+          es_window += 1
+          if es_window == earlystop:
+            es_window = 0
+            #early = np.array(avg_losses['valid'][-earlystop:])
+            early = np.array(es_batch_loss)
+            mean = early.mean()
+            std = early.std()
+            if mean < pr_mean + coef*pr_std and mean > pr_mean - coef*pr_std:
+              break
+            pr_mean = mean
+            pr_std = std
+
 
         if autopilot:
           au_window += 1
@@ -270,6 +287,7 @@ def learning(trloader,
             current_lr = optimizer.param_groups[0]['lr']
             print(f'lr = {current_lr}')
 
+
         if not sch is None:
           if autopilot:
             #if au_slope > au_extr_slope and au_slope <= 0:
@@ -280,6 +298,7 @@ def learning(trloader,
           else:
             sch.step()
         
+
         if overfit:
           of_window += 1
           if of_window == overfit:
@@ -293,17 +312,6 @@ def learning(trloader,
                   param_group['lr'] = lr_surge*cur_lr
                   print(f"LR SURGE до {lr_surge*cur_lr}")
                     
-        if earlystop:
-          es_window += 1
-          if es_window == earlystop:
-            es_window = 0
-            early = np.array(avg_losses['valid'][-earlystop:])
-            mean = early.mean()
-            std = early.std()
-            if mean < pr_mean + coef*pr_std and mean > pr_mean - coef*pr_std:
-              break
-            pr_mean = mean
-            pr_std = std
 
     
     return avg_losses
