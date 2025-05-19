@@ -216,10 +216,9 @@ def learning(trloader,
     if overfit:
       of_window = 0
     if earlystop:
-      es_window = 0
-      pr_mean = np.inf
-      pr_std = np.inf
-      es_batch_loss = []
+      best_valid_loss = np.inf
+      patience = 14
+      no_improve = 0
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -255,19 +254,17 @@ def learning(trloader,
 
 
         if earlystop:
-          es_window += 1
-          if es_window == earlystop:
-            es_window = 0
-            #early = np.array(avg_losses['valid'][-earlystop:])
-            early = np.array(es_batch_loss)
-            mean = early.mean()
-            std = early.std()
-            if mean < pr_mean + coef*pr_std and mean > pr_mean - coef*pr_std:
-              print(' ')
-              print(f'early stopped at ep = {epoch}, pr_mean = {pr_mean}, coef*pr_std = {coef*pr_std}, coef*pr_std диапазон = [{pr_mean - coef*pr_std},{pr_mean + coef*pr_std}], mean = {mean}, std = {std}')
+          current_valid_loss = avg_losses['valid'][-1]
+          if current_valid_loss < best_valid_loss:
+              best_valid_loss = current_valid_loss
+              no_improve = 0
+          else:
+              no_improve += 1
+          
+          if no_improve >= patience:
+              print(f'Early stopped at ep:{epoch}: valid_loss не улучшился {patience} эпох подряд')
               break
-            pr_mean = mean
-            pr_std = std
+            
 
 
         if autopilot:
