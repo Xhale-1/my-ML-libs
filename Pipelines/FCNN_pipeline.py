@@ -203,9 +203,9 @@ def learning(trloader,
              device = 'cpu', 
              sch = None, 
              print_loss = 1, 
-             earlystop = 0, extr_slope = -0.008,
-             autopilot = 0, au_extr_slope = -0.03,
-             overfit = 0):
+             earlystop = 0, coef = 1,
+             autopilot = 0,
+             overfit = 0, lr_surge = 3):
 
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
@@ -213,9 +213,12 @@ def learning(trloader,
       au_window = 0
       au_slope = 0
       batch_loss = []
-      batch_all =[]
     if overfit:
-      of_window = 0 
+      of_window = 0
+    if earlystop:
+      es_window = 0
+      pr_mean = np.inf()
+      pr_std = np.inf()
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -251,6 +254,9 @@ def learning(trloader,
         if autopilot:
           au_window += 1
           if  au_window == autopilot:
+            au_window = 0
+            batch_loss = []
+
             lastlossdata = batch_loss
             #lastlossdata = avg_losses['valid'][-autopilot:]
             x_regr = np.arange(len(lastlossdata)).reshape(-1, 1)
@@ -259,8 +265,6 @@ def learning(trloader,
             reg = LinearRegression().fit(x_regr, y_regr_norm)
             au_slope = reg.coef_[0]
 
-            au_window = 0
-            batch_loss = []
             print(' ')
             print(f'au_slope = {au_slope}')
             current_lr = optimizer.param_groups[0]['lr']
@@ -286,22 +290,21 @@ def learning(trloader,
             if all_valid_higher:
                 for param_group in optimizer.param_groups:
                   cur_lr = optimizer.param_groups[0]['lr']
-                  param_group['lr'] = 3.5*cur_lr
+                  param_group['lr'] = lr_surge*cur_lr
+                  print(f"LR SURGE до {lr_surge*cur_lr}")
                     
         if earlystop:
-          err_num = err_num + 1
-          if  err_num == earlystop:
-            early = avg_losses['valid'][-earlystop:]
-            x_regr = np.arange(len(early)).reshape(-1, 1)
-            y_regr = np.array(early)
-            y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
-            reg = LinearRegression().fit(x_regr, y_regr_norm)
-            slope = reg.coef_[0]
-            err_num = 0
-            if slope > extr_slope and slope <= 0:
-              current_lr = optimizer.param_groups[0]['lr']
-              print(f'early stopped at ep:{epoch}, lr={current_lr}, vl_loss={avg_losses["valid"][-1]}, slope = {slope}')
+          es_window += 1
+          if es_window == earlystop:
+            es_window = 0
+            early = np.array(avg_losses['valid'][-earlystop:])
+            mean = early.mean()
+            std = early.std()
+            if mean < pr_mean + coef*pr_std and mean > pr_mean - coef*pr_std:
               break
+            pr_mean = mean
+            pr_std = std
+
     
     return avg_losses
 
