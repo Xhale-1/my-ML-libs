@@ -217,8 +217,8 @@ def learning(trloader,
       of_window = 0
     if earlystop:
       es_window = 0
-      pr_mean = np.inf()
-      pr_std = np.inf()
+      pr_mean = np.inf
+      pr_std = np.inf
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
