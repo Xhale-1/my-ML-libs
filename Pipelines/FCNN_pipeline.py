@@ -212,6 +212,7 @@ def learning(trloader,
       au_window = 0
       au_slope = 1
       batch_loss = []
+      batch_all =[]
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -247,7 +248,8 @@ def learning(trloader,
         if autopilot:
           au_window += 1
           if  au_window == autopilot:
-            lastlossdata = batch_loss
+            #lastlossdata = batch_loss
+            lastlossdata = avg_losses[val][-autopilot:]
             x_regr = np.arange(len(lastlossdata)).reshape(-1, 1)
             y_regr = np.array(lastlossdata)
             y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
