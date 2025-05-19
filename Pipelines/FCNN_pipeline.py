@@ -206,7 +206,7 @@ def learning(trloader,
              print_loss = 1, 
              earlystop = 0, patience = 14,
              autopilot = 0,
-             overfit = 0, lr_surge = 3,
+             overfit = 0, of_break = 1, lr_surge = 3,
              bestmodel = 0):
 
     loaders = {"train": trloader, "valid": vlloader}
@@ -254,18 +254,23 @@ def learning(trloader,
               print(f"true: {batch[1][0].cpu().numpy().round(3)}")
 
 
-        if earlystop:
-          current_valid_loss = avg_losses['valid'][-1]
-          if current_valid_loss < best_valid_loss:
-              best_valid_loss = current_valid_loss
-              no_improve = 0
-          else:
-              no_improve += 1
-          
-          if no_improve >= patience:
-            print(' ')
-            print(f'Early stopped at ep:{epoch}: valid_loss не улучшился {patience} эпох подряд')
-            break
+        if earlystop or bestmodel:  # Объединённая проверка
+            current_valid_loss = avg_losses['valid'][-1]
+            
+            if current_valid_loss < best_valid_loss:
+                best_valid_loss = current_valid_loss
+                no_improve = 0
+                
+                if bestmodel:  # Сохраняем модель только если bestmodel=True
+                    best_model_state = deepcopy(model.state_dict())
+                    print(f"New best model! Val loss: {best_valid_loss:.4f}")
+            else:
+                no_improve += 1
+            
+            # Ранняя остановка (если earlystop=True)
+            if earlystop and no_improve >= patience:
+                print(f'\nEarly stopped at epoch {epoch}')
+                break
             
 
 
@@ -316,6 +321,7 @@ def learning(trloader,
                 avg_losses=avg_losses, 
                 overfit=overfit, 
                 lr_surge=lr_surge,
+                of_break = of_break,
                 state=state
             )
 
@@ -324,12 +330,8 @@ def learning(trloader,
             patience = state['patience']
             best_valid_loss = state['best_valid_loss']
 
-        if bestmodel:
-            current_valid_loss = avg_losses['valid'][-1]
-            if current_valid_loss < best_valid_loss:
-                best_valid_loss = current_valid_loss
-                best_model_state = deepcopy(model.state_dict())  # Сохраняем веса
-                print(f"New best model! Val loss: {best_valid_loss:.4f}")
+            if of_break:
+              break
 
     if bestmodel and best_model_state is not None:
         model.load_state_dict(best_model_state)
@@ -342,6 +344,7 @@ def check_overfit_and_adjust_lr(optimizer,
                                 avg_losses, 
                                 overfit, 
                                 lr_surge,
+                                of_break,
                                 state):
     """
     Проверяет, переобучается ли модель, и увеличивает LR, если valid_loss > train_loss на протяжении `overfit` эпох.
@@ -367,6 +370,8 @@ def check_overfit_and_adjust_lr(optimizer,
         all_valid_higher = np.all(last_valid_losses > last_train_losses)
         
         if all_valid_higher:
+            if of_break:
+              return
             if state['patience']:
               state['patience'] = 0
             if state['best_valid_loss']:
