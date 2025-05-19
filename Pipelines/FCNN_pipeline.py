@@ -253,6 +253,9 @@ def learning(trloader,
             y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
             reg = LinearRegression().fit(x_regr, y_regr_norm)
             au_slope = reg.coef_[0]
+
+            print(batch_loss[:10])
+            print(len(batch_loss))
             au_window = 0
             batch_loss = []
             print(au_slope)
