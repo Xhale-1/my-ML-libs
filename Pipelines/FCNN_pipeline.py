@@ -263,6 +263,7 @@ def learning(trloader,
             mean = early.mean()
             std = early.std()
             if mean < pr_mean + coef*pr_std and mean > pr_mean - coef*pr_std:
+              print(f'early stopped at ep = {epoch}, pr_mean = {pr_mean}, pr_std = {pr_std}, mean = {mean}, std = {std}')
               break
             pr_mean = mean
             pr_std = std
