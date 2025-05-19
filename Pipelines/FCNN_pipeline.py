@@ -10,6 +10,7 @@ import sklearn
 import shutil
 from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
+from copy import deepcopy
 
 
 
@@ -205,7 +206,8 @@ def learning(trloader,
              print_loss = 1, 
              earlystop = 0, patience = 14,
              autopilot = 0,
-             overfit = 0, lr_surge = 3):
+             overfit = 0, lr_surge = 3,
+             bestmodel = 0):
 
     loaders = {"train": trloader, "valid": vlloader}
     avg_losses = {"train": [], "valid": []}
@@ -215,9 +217,10 @@ def learning(trloader,
       batch_loss = []
     if overfit:
       of_window = 0
-    if earlystop:
-      best_valid_loss = np.inf
-      no_improve = 0
+    if earlystop or bestmodel: 
+        best_valid_loss = np.inf
+        no_improve = 0
+        best_model_state = None 
 
     for epoch in tqdm(range(eps)):
         for k, loader in loaders.items():
@@ -321,8 +324,18 @@ def learning(trloader,
             patience = state['patience']
             best_valid_loss = state['best_valid_loss']
 
+        if bestmodel:
+            current_valid_loss = avg_losses['valid'][-1]
+            if current_valid_loss < best_valid_loss:
+                best_valid_loss = current_valid_loss
+                best_model_state = deepcopy(model.state_dict())  # Сохраняем веса
+                print(f"New best model! Val loss: {best_valid_loss:.4f}")
 
-    return avg_losses
+    if bestmodel and best_model_state is not None:
+        model.load_state_dict(best_model_state)
+        print("Loaded best model weights")
+
+    return avg_losses, model
 
 
 def check_overfit_and_adjust_lr(optimizer, 
