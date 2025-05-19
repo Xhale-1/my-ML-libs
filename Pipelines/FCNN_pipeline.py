@@ -252,9 +252,12 @@ def learning(trloader,
             y_regr = np.array(lastlossdata)
             y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
             reg = LinearRegression().fit(x_regr, y_regr_norm)
-            slope = reg.coef_[0]
+            au_slope = reg.coef_[0]
             au_window = 0
             batch_loss = []
+            print(au_slope)
+            current_lr = optimizer.param_groups[0]['lr']
+            print(f'lr = {current_lr}')
 
         if not sch is None:
           if autopilot:
