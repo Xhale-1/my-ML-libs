@@ -261,7 +261,7 @@ def learning(trloader,
             print(' ')
             print(f'au_slope = {au_slope}')
             current_lr = optimizer.param_groups[0]['lr']
-            print(f'lr = {current_lr}')
+            #print(f'lr = {current_lr}')
 
         if not sch is None:
           if autopilot:
