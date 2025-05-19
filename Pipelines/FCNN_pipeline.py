@@ -298,6 +298,9 @@ def learning(trloader,
         
 
         if overfit:
+          if not earlystop:
+            patience = 0
+            best_valid_loss = np.inf
           state = {'of_window': of_window, 'patience': patience, 'best_valid_loss' : best_valid_loss}
           check_overfit_and_adjust_lr(optimizer = optimizer, 
                                       avg_losses = avg_losses, 
