@@ -65,26 +65,26 @@ def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
 
 
     
-    ids = np.arange(0,y1_tr.shape[0],101)
-    y1_tr_parts = np.split(y1_tr,ids)
-    preds1_tr_parts = np.split(preds1_tr,ids)
-    zip_parts = zip(preds1_tr_parts, y1_tr_parts)
-    rmspe_ls = []
-    maape_ls = []
-    for pr, y1 in zip_parts:
-      pr = np.array(pr)
-      y1 = np.array(y1)
-      rmspe = np.sqrt((((y1 -  pr) / y1)**2).mean())
-      rmspe_ls.apped(rmspe)
-      maape = (np.abs((y1 -  pr) / y1)).mean()
-      maape_ls.append(maape)
+    # ids = np.arange(0,y1_tr.shape[0],101)
+    # y1_tr_parts = np.split(y1_tr,ids)
+    # preds1_tr_parts = np.split(preds1_tr,ids)
+    # zip_parts = zip(preds1_tr_parts, y1_tr_parts)
+    # rmspe_ls = []
+    # maape_ls = []
+    # for pr, y1 in zip_parts:
+    #   pr = np.array(pr)
+    #   y1 = np.array(y1)
+    #   rmspe = np.sqrt((((y1 -  pr) / y1)**2).mean())
+    #   rmspe_ls.apped(rmspe)
+    #   maape = (np.abs((y1 -  pr) / y1)).mean()
+    #   maape_ls.append(maape)
 
-    rmspe_max = np.array(rmspe_ls).max()
-    maape_max = np.array(maape_ls).max()
-    mtrcs.append(rmspe_max)
-    print(f'rmspe: {rmspe_max}')
-    mtrcs.append(maape_max)
-    print(f'maape: {maape_max}'
+    # rmspe_max = np.array(rmspe_ls).max()
+    # maape_max = np.array(maape_ls).max()
+    # mtrcs.append(rmspe_max)
+    # print(f'rmspe: {rmspe_max}')
+    # mtrcs.append(maape_max)
+    # print(f'maape: {maape_max}'
 
     chunk_size = 101
     n_chunks = len(y1_tr) // chunk_size + (1 if len(y1_tr) % chunk_size != 0 else 0)
