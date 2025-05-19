@@ -298,22 +298,60 @@ def learning(trloader,
         
 
         if overfit:
-          of_window += 1
-          if of_window == overfit:
-            of_window = 0
-            last_valid_losses = np.array(avg_losses['valid'][-overfit:])
-            last_train_losses = np.array(avg_losses['train'][-overfit:])
-            all_valid_higher = np.all(last_valid_losses > last_train_losses)
-            if all_valid_higher:
-                for param_group in optimizer.param_groups:
-                  cur_lr = optimizer.param_groups[0]['lr']
-                  param_group['lr'] = lr_surge*cur_lr
-                  print(f"LR SURGE до {lr_surge*cur_lr}")
-                    
+          state = {'of_window': of_window, 'patience': patience, 'best_valid_loss' : best_valid_loss}
+          check_overfit_and_adjust_lr(optimizer = optimizer, 
+                                      avg_losses = avg_losses, 
+                                      overfit = overfit, 
+                                      lr_surge = lr_surge,
+                                      state = state)
 
     
     return avg_losses
 
+
+def check_overfit_and_adjust_lr(optimizer, 
+                                avg_losses, 
+                                overfit, 
+                                lr_surge,
+                                state):
+    """
+    Проверяет, переобучается ли модель, и увеличивает LR, если valid_loss > train_loss на протяжении `overfit` эпох.
+    
+    Параметры:
+    - optimizer: оптимизатор (PyTorch)
+    - avg_losses: словарь с 'train' и 'valid' лоссами (например, {'train': [0.5, 0.4, ...], 'valid': [0.6, 0.5, ...]})
+    - overfit: количество эпох для проверки переобучения
+    - lr_surge: множитель для увеличения LR (например, 1.5)
+    
+    Возвращает:
+    - lr_was_adjusted: bool (True, если LR был изменён)
+    """
+    state['of_window'] += 1
+    lr_was_adjusted = False
+    
+    if state['of_window'] == overfit:
+        state['of_window'] = 0
+        last_valid_losses = np.array(avg_losses['valid'][-overfit:])
+        last_train_losses = np.array(avg_losses['train'][-overfit:])
+        
+        # Проверяем, что ВСЕ valid_loss > train_loss
+        all_valid_higher = np.all(last_valid_losses > last_train_losses)
+        
+        if all_valid_higher:
+            if state['patience']:
+              state['patience'] = 0
+            if state['best_valid_loss']:
+              state['best_valid_loss'] = np.inf
+            cur_lr = optimizer.param_groups[0]['lr']
+            new_lr = lr_surge * cur_lr
+            
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = new_lr
+            
+            print(f"[Overfit detected] LR увеличен в {lr_surge}x: {cur_lr:.2e} → {new_lr:.2e}")
+            lr_was_adjusted = True
+    
+    return lr_was_adjusted
 
 
 def err_plot(losses):
