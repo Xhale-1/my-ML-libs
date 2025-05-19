@@ -256,7 +256,8 @@ def learning(trloader,
 
             au_window = 0
             batch_loss = []
-            print(au_slope)
+            print(' ')
+            print(f'au_slope = {au_slope}')
             current_lr = optimizer.param_groups[0]['lr']
             print(f'lr = {current_lr}')
 
