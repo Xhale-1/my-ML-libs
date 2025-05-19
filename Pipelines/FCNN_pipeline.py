@@ -242,7 +242,6 @@ def learning(trloader,
                     loss = criterion(pred, batch[1].to(device))
                     total_loss += loss.cpu().item()
                     batch_loss.append(loss.cpu().item())
-                    es_batch_loss.append(loss.cpu().item())
 
             average_loss = total_loss / len(loaders[k])
             avg_losses[k].append(average_loss)
