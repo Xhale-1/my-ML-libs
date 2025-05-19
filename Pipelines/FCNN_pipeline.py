@@ -210,7 +210,7 @@ def learning(trloader,
     avg_losses = {"train": [], "valid": []}
     if autopilot:
       au_window = 0
-      au_slope = 1
+      au_slope = 0
       batch_loss = []
       batch_all =[]
 
