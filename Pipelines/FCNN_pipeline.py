@@ -285,7 +285,8 @@ def learning(trloader,
             all_valid_higher = np.all(last_valid_losses > last_train_losses)
             if all_valid_higher:
                 for param_group in optimizer.param_groups:
-                    param_group['lr'] = 0.02  # Уменьшаем LR
+                  cur_lr = optimizer.param_groups[0]['lr']
+                  param_group['lr'] = 2.5*cur_lr
                     
         if earlystop:
           err_num = err_num + 1
