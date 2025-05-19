@@ -248,8 +248,8 @@ def learning(trloader,
         if autopilot:
           au_window += 1
           if  au_window == autopilot:
-            #lastlossdata = batch_loss
-            lastlossdata = avg_losses['valid'][-autopilot:]
+            lastlossdata = batch_loss
+            #lastlossdata = avg_losses['valid'][-autopilot:]
             x_regr = np.arange(len(lastlossdata)).reshape(-1, 1)
             y_regr = np.array(lastlossdata)
             y_regr_norm = (y_regr - np.mean(y_regr)) / (np.std(y_regr) + 1e-9)  
