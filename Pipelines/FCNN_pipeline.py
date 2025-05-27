@@ -111,44 +111,49 @@ def descale(x, scaler, col=-1):
 
 
 
-def loaders(x,y,prop_array, bs = 0.01, addtr = 0):
 
-  if not isinstance(x, torch.Tensor):
-    x = torch.tensor(x, dtype = torch.float32)
-  if not isinstance(y, torch.Tensor):
-    y = torch.tensor(y, dtype = torch.float32)
-  
-  if prop_array == None:
-    prop_array = [list(range(x.shape[0]))]
-  loaders = []
 
-  for i,prop in enumerate(prop_array):
-    x_prop = x[prop]
-    y_prop = y[prop]
 
-    fakeds = torch.utils.data.TensorDataset(x_prop, y_prop)
 
-    shuffle = (i == 0)
-    batch_size = int(bs * len(fakeds)) if i == 0 else int(2.5 * bs * len(fakeds))
+
+def loaders(x, y, prop_array=None, bs=0.01, shuffle=False):
+    if not isinstance(x, torch.Tensor):
+        x = torch.tensor(x, dtype=torch.float32)
+    if not isinstance(y, torch.Tensor):
+        y = torch.tensor(y, dtype=torch.float32)
     
-    loader = torch.utils.data.DataLoader(
-        fakeds,
-        batch_size=batch_size,
-        shuffle=shuffle,
-        num_workers=2
-    )
-    loaders.append(loader)
+    loaders = []
 
-    if addtr and i==0:
+    if prop_array is None:
+        prop_array = [list(range(x.shape[0]))]
+    
+    # Convert single values to lists
+    if not isinstance(bs, list):
+        bs = [bs] * len(prop_array)
+    if not isinstance(shuffle, list):
+        shuffle = [shuffle] * len(prop_array)
+    
+    # Check lengths match
+    if len(prop_array) != len(bs) or len(prop_array) != len(shuffle):
+        raise ValueError("Lengths of prop_array, bs and shuffle should match")
+    
+    for prop, b, sh in zip(prop_array, bs, shuffle):
+        x_prop = x[prop]
+        y_prop = y[prop]
+
+        fakeds = torch.utils.data.TensorDataset(x_prop, y_prop)
+
+        batch_size = int(b * len(fakeds)) if isinstance(b, float) else b
+        
         loader = torch.utils.data.DataLoader(
-        fakeds,
-        batch_size=int(2.5 * bs * len(fakeds)),
-        shuffle=False,
-        num_workers=2
+            fakeds,
+            batch_size=batch_size,
+            shuffle=sh,
+            num_workers=2
         )
         loaders.append(loader)
 
-  return loaders
+    return loaders
 
 
 
