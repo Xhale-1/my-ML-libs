@@ -118,7 +118,8 @@ def loaders(x,y,prop_array, bs = 0.01, addtr = 0):
   if not isinstance(y, torch.Tensor):
     y = torch.tensor(y, dtype = torch.float32)
   
-
+  if prop_array == None:
+    prop_array = range(x.shape[0])
   loaders = []
 
   for i,prop in enumerate(prop_array):
