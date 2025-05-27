@@ -119,7 +119,7 @@ def loaders(x,y,prop_array, bs = 0.01, addtr = 0):
     y = torch.tensor(y, dtype = torch.float32)
   
   if prop_array == None:
-    prop_array = range(x.shape[0])
+    prop_array = [list(range(x.shape[0]))]
   loaders = []
 
   for i,prop in enumerate(prop_array):
