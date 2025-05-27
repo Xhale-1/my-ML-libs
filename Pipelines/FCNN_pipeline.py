@@ -447,7 +447,7 @@ def predict(model,loaders, device, yss=0):
 
 
 
-def inference(model, loaders, ys, device, metrics_func, scaler2 = 0, print_loss = 1):
+def inference(model, loaders, ys, device, metrics_func = None, scaler2 = 0, print_loss = 1):
   metrics = []
 
   data = zip(loaders,ys)
@@ -472,8 +472,8 @@ def inference(model, loaders, ys, device, metrics_func, scaler2 = 0, print_loss 
     if print_loss:
       print(f'rmse test: {rmse0}')
     
-
-    result = metrics_func(y1_tr, preds1_tr,i)
-    metrics.append(result)
+    if not metrics_func == None:
+      result = metrics_func(y1_tr, preds1_tr,i)
+      metrics.append(result)
 
   return preds_tr, preds1_tr, rmse0, metrics
