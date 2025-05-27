@@ -476,4 +476,4 @@ def inference(model, loaders, ys, device, metrics_func = None, scaler2 = 0, prin
       result = metrics_func(y1_tr, preds1_tr,i)
       metrics.append(result)
 
-  return preds_tr, preds1_tr, rmse0, metrics
+  return preds_tr, [preds1_tr,y1_tr], rmse0, metrics
