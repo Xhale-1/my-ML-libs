@@ -194,8 +194,13 @@ import math
 
 
 
-def special_preds(model, x, y, device, n_graphs=1):
+def special_preds(model, x, y, device, n_graphs=1, scalers = None):
     
+    if scalers is not None:
+      x = np.array(x)
+      x = scalers[0].inverse_transform(x)
+      y = np.array(y)
+      y = scalers[1].inverse_transform(y)
     if not isinstance(x, torch.Tensor):
       x = torch.tensor(x,dtype = torch.float32)
     if not isinstance(y, torch.Tensor):
