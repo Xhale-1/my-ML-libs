@@ -216,7 +216,6 @@ def special_preds(model, x, y, device, n_graphs=1, scalers=None):
     for i in ids2:
         base = x[i, :4]
         time = torch.linspace(x[i:i+100, 4].min(), x[i:i+100, 4].max(), 1000)
-
         x1 = torch.cat([base.repeat(time.shape[0], 1), time.unsqueeze(1)], dim=1)
 
         loader = torch.utils.data.DataLoader(x1, batch_size=max(1, int(0.05 * x1.shape[0])), shuffle=False)
@@ -226,18 +225,27 @@ def special_preds(model, x, y, device, n_graphs=1, scalers=None):
 
         preds_np = preds.numpy().reshape(-1, 1)
 
-        # Apply inverse scaling to predictions if scalers are given
+        # Inverse transform predictions
         if scalers is not None:
             preds_np = scalers[1].inverse_transform(preds_np)
 
+            # Inverse transform time component
+            time_np = time.unsqueeze(1).numpy()
+            # Создаём фиктивные строки с time в 5-й колонке
+            time_extended = np.zeros((time_np.shape[0], x.shape[1]))
+            time_extended[:, 4] = time_np[:, 0]
+            time_np = scalers[0].inverse_transform(time_extended)[:, 4]
+            time_np = time_np.reshape(-1, 1)
+        else:
+            time_np = time.unsqueeze(1).numpy()
+
         x_i.append(x_orig[i:i+100, 4].reshape(-1, 1))
         y_i.append(y_orig[i:i+100].reshape(-1, 1))
-        x_pred_i.append(time.unsqueeze(1).numpy())
+        x_pred_i.append(time_np)
         preds_i.append(preds_np)
         ids21.append(i)
 
     return x_i, y_i, x_pred_i, preds_i, ids21
-
 
 
 
