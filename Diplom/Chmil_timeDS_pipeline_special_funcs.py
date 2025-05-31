@@ -193,20 +193,18 @@ import matplotlib.pyplot as plt
 import math
 
 
-
 def special_preds(model, x, y, device, n_graphs=1, scalers=None):
     if not isinstance(x, torch.Tensor):
         x = torch.tensor(x, dtype=torch.float32)
     if not isinstance(y, torch.Tensor):
         y = torch.tensor(y, dtype=torch.float32)
 
+    x_orig = x.numpy()
+    y_orig = y.numpy()
+
     if scalers is not None:
-        # Преобразуем обратно в исходный масштаб (весь массив разом)
-        x_np = scalers[0].inverse_transform(x.numpy())
-        y_np = scalers[1].inverse_transform(y.numpy())
-    else:
-        x_np = x.numpy()
-        y_np = y.numpy()
+        x_orig = scalers[0].inverse_transform(x_orig)
+        y_orig = scalers[1].inverse_transform(y_orig)
 
     ids = np.arange(0, x.shape[0], 101)
     ids2 = np.random.choice(ids, n_graphs, replace=False)
@@ -226,14 +224,20 @@ def special_preds(model, x, y, device, n_graphs=1, scalers=None):
         with torch.no_grad():
             preds = torch.cat([model(batch.to(device)).cpu() for batch in loader])
 
-        # Используем обратно масштабированные значения
-        x_i.append(x_np[i:i+100, 4].reshape(-1, 1))
-        y_i.append(y_np[i:i+100].reshape(-1, 1))
+        preds_np = preds.numpy().reshape(-1, 1)
+
+        # Apply inverse scaling to predictions if scalers are given
+        if scalers is not None:
+            preds_np = scalers[1].inverse_transform(preds_np)
+
+        x_i.append(x_orig[i:i+100, 4].reshape(-1, 1))
+        y_i.append(y_orig[i:i+100].reshape(-1, 1))
         x_pred_i.append(time.unsqueeze(1).numpy())
-        preds_i.append(preds.numpy().reshape(-1, 1))
+        preds_i.append(preds_np)
         ids21.append(i)
 
     return x_i, y_i, x_pred_i, preds_i, ids21
+
 
 
 
