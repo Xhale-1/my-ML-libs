@@ -194,51 +194,46 @@ import math
 
 
 
-def special_preds(model, x, y, device, n_graphs=1, scalers = None):
-    
-    if scalers is not None:
-      x = np.array(x)
-      x = scalers[0].inverse_transform(x)
-      y = np.array(y)
-      y = scalers[1].inverse_transform(y)
+def special_preds(model, x, y, device, n_graphs=1, scalers=None):
     if not isinstance(x, torch.Tensor):
-      x = torch.tensor(x,dtype = torch.float32)
+        x = torch.tensor(x, dtype=torch.float32)
     if not isinstance(y, torch.Tensor):
-      y = torch.tensor(y,dtype = torch.float32)
-    
-    ids = np.arange(0,x.shape[0],101)
+        y = torch.tensor(y, dtype=torch.float32)
+
+    if scalers is not None:
+        # Преобразуем обратно в исходный масштаб (весь массив разом)
+        x_np = scalers[0].inverse_transform(x.numpy())
+        y_np = scalers[1].inverse_transform(y.numpy())
+    else:
+        x_np = x.numpy()
+        y_np = y.numpy()
+
+    ids = np.arange(0, x.shape[0], 101)
     ids2 = np.random.choice(ids, n_graphs, replace=False)
-    
-    x_i = []
-    y_i = []
-    x_pred_i = []
-    preds_i = []
-    ids21 = []
+
+    x_i, y_i, x_pred_i, preds_i, ids21 = [], [], [], [], []
+
+    model.eval()
+
     for i in ids2:
+        base = x[i, :4]
+        time = torch.linspace(x[i:i+100, 4].min(), x[i:i+100, 4].max(), 1000)
 
-      base = x[i, :4]
-      time = torch.linspace(x[i:i+100, 4].min(), x[i:i+100, 4].max(), 1000)
-      new_rows = [torch.cat((base, j.unsqueeze(0))) for j in time]  # Создаем новые строки
-      x1 = torch.stack(new_rows).reshape(-1, 5)  # Формируем новый тензор
+        x1 = torch.cat([base.repeat(time.shape[0], 1), time.unsqueeze(1)], dim=1)
 
-      loader = torch.utils.data.DataLoader(x1, batch_size=int(0.05 * x1.shape[0]), 
-                                         shuffle=False, num_workers=2)
-      model.eval()
-      preds = []
-      with torch.no_grad():
-        for batch in loader:
-            pred = model(batch.to(device))
-            preds.append(pred.cpu())
-        preds = torch.cat(preds).detach()
+        loader = torch.utils.data.DataLoader(x1, batch_size=max(1, int(0.05 * x1.shape[0])), shuffle=False)
 
-      x_i.append(x[i:i+100,4].reshape(-1,1))
-      y_i.append(y[i:i+100].reshape(-1,1)) 
-      x_pred_i.append(time.reshape(-1,1))
-      preds_i.append(preds.reshape(-1,1))
-      ids21.append(i)
+        with torch.no_grad():
+            preds = torch.cat([model(batch.to(device)).cpu() for batch in loader])
+
+        # Используем обратно масштабированные значения
+        x_i.append(x_np[i:i+100, 4].reshape(-1, 1))
+        y_i.append(y_np[i:i+100].reshape(-1, 1))
+        x_pred_i.append(time.unsqueeze(1).numpy())
+        preds_i.append(preds.numpy().reshape(-1, 1))
+        ids21.append(i)
 
     return x_i, y_i, x_pred_i, preds_i, ids21
-
 
 
 
