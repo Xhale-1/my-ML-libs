@@ -143,21 +143,21 @@ def inference2(model, loaders, ys, device, scaler2 = 0, print_loss = 1):
 
 def shuffle_within_hundreds(arr):
         # Определяем количество полных сотен
-        n_hundreds = len(arr) // 100
-        remainder = len(arr) % 100  # Остаток, если длина не кратна 100
+        n_hundreds = len(arr) // 101
+        remainder = len(arr) % 101  # Остаток, если длина не кратна 101
         
         # Копируем массив для изменений
         shuffled = arr.copy()
         
         # Перемешиваем каждую сотню
         for i in range(n_hundreds):
-            start = i * 100
-            end = (i + 1) * 100
+            start = i * 101
+            end = (i + 1) * 101
             np.random.shuffle(shuffled[start:end])
         
         # Перемешиваем остаток, если он есть
         if remainder > 0:
-            np.random.shuffle(shuffled[n_hundreds * 100:])
+            np.random.shuffle(shuffled[n_hundreds * 101:])
         
         return shuffled
 
