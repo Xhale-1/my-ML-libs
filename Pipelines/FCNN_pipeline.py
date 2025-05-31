@@ -452,33 +452,41 @@ def predict(model,loaders, device, yss=0):
 
 
 
-def inference(model, loaders, ys, device, metrics_func = None, scaler2 = 0, print_loss = 1):
-  metrics = []
+def inference(model, loaders, ys, device, metrics_func=None, scaler2=0, print_loss=True):
+    import numpy as np
+    import torch
+    from sklearn.preprocessing import StandardScaler
 
-  data = zip(loaders,ys)
-  for i,(loader,y) in enumerate(data):
-    [preds_tr], _ = predict(model,[loader], device)
+    metrics = []
+    sc_data = []
+    unsc_data = []
+    rmses = []
 
-    if isinstance(y, torch.Tensor):
-      y = y.detach().numpy()
-    else:
-      y = np.array(y)
+    is_scaler = isinstance(scaler2, StandardScaler)
 
-    preds1_tr = preds_tr.detach().numpy()
-    y1_tr = y
-    if isinstance(scaler2, StandardScaler):
-      preds1_tr = scaler2.inverse_transform(preds1_tr)
-      y1_tr = scaler2.inverse_transform(y)
+    for i, (loader, y_true) in enumerate(zip(loaders, ys)):
+        [preds_tr], _ = predict(model, [loader], device)
 
-    if print_loss:
-      print(np.array(list(zip(preds1_tr[:5],y1_tr[:5]))).reshape(-1,2))
+        y_true_np = y_true.detach().numpy() if isinstance(y_true, torch.Tensor) else np.array(y_true)
+        preds_np = preds_tr.detach().cpu().numpy()
 
-    rmse0 = np.sqrt(((y1_tr -  preds1_tr)**2).mean())
-    if print_loss:
-      print(f'rmse test: {rmse0}')
-    
-    if not metrics_func == None:
-      result = metrics_func(y1_tr, preds1_tr,i)
-      metrics.append(result)
+        if is_scaler:
+            preds_np = scaler2.inverse_transform(preds_np)
+            y_true_np = scaler2.inverse_transform(y_true_np)
 
-  return preds_tr, [preds1_tr,y1_tr], rmse0, metrics
+        if print_loss:
+            print(np.column_stack((preds_np[:5], y_true_np[:5])))
+        
+        rmse = np.sqrt(np.mean((y_true_np - preds_np) ** 2))
+        if print_loss:
+            print(f'RMSE test: {rmse:.4f}')
+
+        if metrics_func is not None:
+            metrics.append(metrics_func(y_true_np, preds_np, i))
+
+        sc_data.append([preds_tr, y_true])
+        unsc_data.append([preds_np, y_true_np])
+        rmses.append(rmse)
+
+    return sc_data, unsc_data, rmses, metrics
+
