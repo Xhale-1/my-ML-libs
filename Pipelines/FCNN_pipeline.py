@@ -87,27 +87,59 @@ def scale(objs, scale_data=None):
 
 
 
-def descale(x, scaler, col=-1):
+
+def descale(x, scaler, cols=None):
     """
-    Дескейлит данные, используя StandardScaler.
-    :param x: Данные для дескейла (массив или тензор).
-    :param scaler: Обученный StandardScaler.
-    :param col: Индекс колонки для дескейла. Если -1, дескейлит весь массив.
-    :return: Дескейленные данные.
+    Дескейлит данные, используя StandardScaler, даже если в данных меньше колонок, чем в scaler.
+    
+    Параметры:
+    ----------
+    x : np.ndarray | torch.Tensor
+        Данные для дескейла. Может быть 1D или 2D.
+    scaler : StandardScaler
+        Обученный StandardScaler (ожидается, что он был обучен на `n` колонках).
+    cols : list[int] | int | None
+        Какие колонки дескейлить:
+        - Если `None` — дескейлит все колонки (x должен иметь столько же колонок, сколько scaler).
+        - Если `int` — дескейлит только указанную колонку (x должен быть 1D или 2D с 1 колонкой).
+        - Если `list[int]` — дескейлит указанные колонки (x должен иметь столько колонок, сколько указано в `cols`).
+    
+    Возвращает:
+    -----------
+    np.ndarray
+        Дескейленные данные той же формы, что и входные (кроме случая, когда x — тензор).
     """
     if isinstance(x, torch.Tensor):
         x = x.numpy()
     
-    if col == -1:
-        # Дескейлим весь массив
-        x1 = scaler.inverse_transform(x)
-    else:
-        # Дескейлим только указанную колонку
-        mean = scaler.mean_[col]  
-        std = scaler.scale_[col]  
-        x1 = x * std + mean  
+    x = np.asarray(x)
+    if x.ndim == 1:
+        x = x.reshape(-1, 1)
     
-    return x1
+    if cols is None:
+        # Дескейлим все колонки (x должен иметь столько же колонок, сколько scaler)
+        return scaler.inverse_transform(x)
+    
+    elif isinstance(cols, int):
+        # Дескейлим одну колонку (x должен быть 1D или 2D с 1 колонкой)
+        mean = scaler.mean_[cols]
+        std = scaler.scale_[cols]
+        return x * std + mean
+    
+    elif isinstance(cols, (list, np.ndarray)):
+        # Дескейлим несколько колонок (x должен иметь столько колонок, сколько в `cols`)
+        if len(cols) != x.shape[1]:
+            raise ValueError(f"Ожидается {len(cols)} колонок в x, но получено {x.shape[1]}")
+        
+        result = np.zeros_like(x)
+        for i, col in enumerate(cols):
+            mean = scaler.mean_[col]
+            std = scaler.scale_[col]
+            result[:, i] = x[:, i] * std + mean
+        return result
+    
+    else:
+        raise ValueError("Параметр `cols` должен быть None, int или list[int]")
 
 
 
